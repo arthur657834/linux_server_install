@@ -1,0 +1,39 @@
+yum -y install openswan xl2tpd ppp lsof
+
+mkdir /var/run/xl2tpd/
+echo 0 > /proc/sys/net/ipv4/conf/default/accept_redirects
+echo 0 > /proc/sys/net/ipv4/conf/default/send_redirects
+
+vim /etc/xl2tpd/xl2tpd.conf 
+
+[global]
+ipsec saref = yes
+
+[lns default]
+ip range = 10.82.88.2-10.82.88.254
+local ip = 10.82.88.1
+refuse chap = yes
+refuse pap = yes
+require authentication = yes
+ppp debug = yes
+pppoptfile = /etc/ppp/options.xl2tpd
+length bit = yes 
+
+vim /etc/ppp/options.xl2tpd
+
+require-mschap-v2
+ms-dns 8.8.8.8
+ms-dns 8.8.4.4
+asyncmap 0
+auth
+crtscts
+lock
+hide-password
+modem
+debug
+name l2tpd
+proxyarp
+lcp-echo-interval 30
+lcp-echo-failure 4 
+
+xl2tpd -D 启动
