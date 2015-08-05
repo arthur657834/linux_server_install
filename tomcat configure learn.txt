@@ -1,0 +1,65 @@
+1.jdk 安装
+
+export JAVA_HOME=/usr/java/jdk1.8.0_51
+export PATH=$JAVA_HOME/bin:$PATH
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib:$JAVA_HOME/jre/lib
+
+2.下载tomcat
+加压到opt下
+对bin下面的sh脚本执行chmod +x 
+
+3.
+./startup.sh
+默认端口8080
+
+SSL配置
+vi server.xml 增加
+
+<Connector SSLEnabled="true" acceptCount="100" clientAuth="false"
+    disableUploadTimeout="true" enableLookups="false" maxThreads="25"
+    port="8443" keystoreFile="/opt/keystore/nsp.keystore" keystorePass="657834"
+    protocol="org.apache.coyote.http11.Http11NioProtocol" scheme="https"
+    secure="true" sslProtocol="TLS" />
+
+配置TLS版本，修改第二行
+sslProtocols="TLSv1,TLSv1.1,TLSv1.2"
+sslEnabledProtocols="TLSv1,TLSv1.1,TLSv1.2"
+
+全站SSL
+vi  web.xml
+<security-constraint>
+    <web-resource-collection>
+        <web-resource-name>securedapp</web-resource-name>
+        <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <user-data-constraint>
+        <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+</security-constraint>
+
+将 URL 映射设为 /* ，这样你的整个应用都要求是 HTTPS 访问，而 transport-guarantee 标签设置为 CONFIDENTIAL 以便使应用支持 SSL。
+如果你希望关闭 SSL ，只需要将 CONFIDENTIAL 改为 NONE 即可。
+
+测试端口的ssl协议支持
+openssl s_client -connect 192.168.1.10:8443 -ssl3 
+	
+配置web管理帐号,首页左上方
+vi tomcat-users.xml
+<tomcat-users>
+       <user name="admin" password="admin" roles="admin-gui,manager-gui" />
+</tomcat-users>
+
+配置web访问端口
+vi server.xml
+<Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+			   
+keytool -genkey -alias nsp -keyalg RSA -validity 3650 -keystore /opt/keystore/nsp.keystore -dname "CN=lj, OU=lj, O=lj, L=lj, ST=lj, C=lj" -storepass 657834 -keypass 657834
+			   
+keytool -genkey -v -alias nsp -keyalg RSA -storetype PKCS12 -keystore /opt/keystore/nsp.pl2 -dname "CN=lj, OU=lj, O=lj, L=lj, ST=lj, C=lj" -storepass 657834 -keypass 657834		   
+
+keytool -export -alias nsp -keystore /opt/keystore/nsp.pl2 -storetype PKCS12 -storepass 657834 -rfc -file /opt/keystore/nsp.cer  
+
+keytool -import -v -file /opt/keystore/nsp.cer  -keystore /opt/keystore/nsp.keystore -storepass 657834
+
+	   
+				   
