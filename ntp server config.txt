@@ -1,0 +1,21 @@
+yum -y install ntp
+
+vi /etc/ntp.conf
+
+修改restrict default kod nomodify notrap nopeer noquery
+为restrict default nomodify
+
+注：也可修改ntp server，也可以不该
+server 0.asia.pool.ntp.org 
+server 2.asia.pool.ntp.org
+	
+客户端需要等一段时间之后在运行ntpdate，否则会出现
+ no server suitable for synchronization found
+ 
+ 
+ntpdate 调试命令
+
+服务端：watch ntpq -p
+
+客户端:ntpdate -d server-ip
+
