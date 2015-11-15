@@ -1,0 +1,125 @@
+yum -y install httpd httpd-devel mysql mysql-server mysql-devel php php-devel php-mysql php-common php-gd php-mbstring php-mcrypt php-xml php-ldap php-pear
+yum install -y freeradius freeradius-mysql freeradius-utils
+pear install DB 
+pear channel-update pear.php.net  
+pear upgrade-all 
+
+service httpd start
+service mysqld start
+chkconfig httpd on
+chkconfig mysqld on 
+mysqladmin -u root password '123456'
+
+测试：
+去掉#注释
+vi /etc/raddb/users
+#steve  Cleartext-Password := "testing"  
+#       Service-Type = Framed-User,  
+#       Framed-Protocol = PPP,  
+#       Framed-IP-Address = 172.16.3.33,  
+#       Framed-IP-Netmask = 255.255.255.0,  
+#       Framed-Routing = Broadcast-Listen,  
+#       Framed-Filter-Id = "std.ppp",  
+#       Framed-MTU = 1500,  
+#       Framed-Compression = Van-Jacobsen-TCP-IP
+
+radiusd -X
+
+radtest yerunian test localhost 1812 testing123
+
+killall -9 radiusd
+chkconfig  radiusd on
+service radiusd start
+测试结束
+
+cp /etc/raddb/clients.conf /etc/raddb/clients.conf.bak
+grep -v \# /etc/raddb/clients.conf.bak >/etc/raddb/clients.conf 
+vi /etc/raddb/clients.conf
+#将来你的真正的raidus计费客户端如routeros等需要在这里配置ip信息,例如  
+client x.x.x.x{  #这里的x.x.x.x就是你的routeros服务器内网口ip  
+   ipaddr=x.x.x.x #routeros内网ip  
+   secret=xxxxxxxxxx    #你自己定义的密码  
+   shortname=ros  
+}
+
+cp /etc/raddb/sql/mysql/admin.sql /etc/raddb/sql/mysql/admin.sql.bak
+grep -v ^# /etc/raddb/sql/mysql/admin.sql.bak > /etc/raddb/sql/mysql/admin.sql
+vi /etc/raddb/sql/mysql/admin.sql
+
+create database radius;
+use radius;
+CREATE USER 'radius'@'localhost';
+SET PASSWORD FOR 'radius'@'localhost' = PASSWORD('radpass');
+GRANT SELECT ON radius.* TO 'radius'@'localhost';
+GRANT ALL on radius.radacct TO 'radius'@'localhost';
+GRANT ALL on radius.radpostauth TO 'radius'@'localhost';
+flush privileges;
+
+mysql -uroot -p123456 < /etc/raddb/sql/mysql/admin.sql
+mysql -uroot -p123456 radius < /etc/raddb/sql/mysql/schema.sql
+mysql -uroot -p123456 radius < /etc/raddb/sql/mysql/nas.sql
+mysql -uroot -p123456 radius < /etc/raddb/sql/mysql/ippool.sql
+
+vi /etc/raddb/radiusd.conf
+去掉以下两行的注释
+$INCLUDE sql.conf 
+$INCLUDE sql/mysql/counter.conf 
+
+vi /etc/raddb/sql.conf
+去掉以下1行的注释
+readclients = yes
+
+vi /etc/raddb/sites-enabled/default
+authorize,accounting,session
+去掉以下行的注释
+#sql
+
+测试
+mysql -uroot -p123456 radius -e "INSERT INTO radcheck (UserName, Attribute, Value) VALUES ('user1', 'Password','password1');"
+service radiusd restart
+radtest user1 password1 localhost 1812 testing123
+测试结束
+
+安装ui
+http://sourceforge.net/projects/daloradius/files/latest/download
+tar zxvf daloradius-0.9-9.tar.gz
+cp  -R daloradius-0.9-9 /var/www
+cd /var/www
+mv daloradius-0.9-9 daloradius
+mysql -uroot -p123456 radius < /var/www/daloradius/contrib/db/mysql-daloradius.sql
+mysql -uroot -p123456 radius < /var/www/daloradius/contrib/db/fr2-mysql-daloradius-and-freeradius.sql
+
+	If this is the case then you have 2 options:
+		A. If you are working with FreeRADIUS 1.X then:
+				mysql -u root -p radius < fr1-mysql-daloradius-and-freeradius.sql
+		B. If you are working with FreeRADIUS 2.X then:
+				mysql -u root -p radius < fr2-mysql-daloradius-and-freeradius.sql
+				
+vi /var/www/daloradius/library/daloradius.conf.php
+$configValues['CONFIG_DB_USER'] = 'radius';  
+$configValues['CONFIG_DB_PASS'] = 'radpass'; 
+
+vi /etc/httpd/conf/httpd.conf
+
+最后增加以下内容
+Alias /myradius "/var/www/daloradius/"  
+<Directory /var/www/daloradius/>  
+  Options None  
+  order deny,allow  
+  allow from all  
+</Directory>
+
+service httpd restart
+
+http://192.168.1.10/myradius/login.php
+administrator/radius
+ 
+
+http://peihexian.iteye.com/blog/2087206
+CentOS PPTP配置FreeRADIUS+DaloRADIUS实现高级用户控制+流量控制
+http://www.xj123.info/2323.html
+
+
+
+
+
