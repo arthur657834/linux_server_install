@@ -1,0 +1,70 @@
+1.添加git用户，安装git权限管理软件gitolite
+useradd git
+echo git | passwd --stdin git
+su git
+cd
+git clone https://github.com/sitaramc/gitolite.git
+mkdir -p $HOME/bin
+gitolite/install -to $HOME/bin
+
+2.添加git管理员
+在管理员机器端生成密钥
+linux为例：
+ssh-keygen -t rsa(一路回车)
+
+将密钥拷贝到git服务器
+scp root@192.168.100.3:/root/.ssh/id_rsa.pub /home/git
+
+bin/gitolite setup -pk id_rsa.pub
+命令执行成功之后就生成git管理库(gitolite-admin)和git本地仓库(repositories)
+
+3.客户端导出管理库
+git clone git@192.168.16.203:gitolite-admin
+
+4.新建项目及添加用户
+将添加用的密钥下载到gitolite-admin/keydir
+修改gitolite-admin/gitolite.conf,添加项目,用户
+例：
+repo project            #新建项目的名称
+    RW+     =   lj      #读写权限的用户,多用户以空格分割,此处添加的用户名应与密钥一致(例：密钥test.pub,用户test)
+    R       =   3       #读权限的用户
+
+提交修改到git管理库,调教成功之后会在repositories下出现project的git库
+
+5.安装gitweb
+yum -y install httpd gitweb python-setuptools
+修改/etc/gitweb.conf
+#our $projectroot = "/var/lib/git"; => $projectroot = "/home/git/repositories";
+chmod 705 /home/git
+
+编写git.sh
+#!/bin/bash
+while :
+do
+chmod 777 -R /home/git/repositories/
+sleep 1
+done
+
+编写daemon-git.sh
+#!/bin/bash
+x=`ps aux | grep git.sh | grep -v grep`
+if [ "x" ]
+then
+nohup sh /root/git.sh &
+fi
+
+将daemon-git.sh加入crontab,1分钟执行一次
+*/1 * * * * sh /root/daemon-git.sh
+将daemon-git.sh加入开机启动
+echo "sh /root/daemon-git.sh" >>/etc/rc.local
+
+service httpd start
+这样就能通过浏览器访问git仓库(http://192.168.16.203/git)
+
+注:添加shell执行的原因为每次git代码提交之后,项目仓库的权限会被修改导致gitweb无法访问
+
+
+
+
+
+
