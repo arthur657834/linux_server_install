@@ -63,7 +63,26 @@ service httpd start
 
 注:添加shell执行的原因为每次git代码提交之后,项目仓库的权限会被修改导致gitweb无法访问
 
+配置文件范例：
+repo foo
+    RW+                     =   alice
+    -   master              =   bob
+    -   refs/tags/v[0-9]    =   bob
+    RW                      =   bob
+    RW  refs/tags/v[0-9]    =   carol
+    R                       =   dave
+	
+	@staff      =   alice bob carol
+@interns    =   ashok
 
+repo secret
+    RW      =   @staff
+
+repo foss
+    RW+     =   @staff
+    RW      =   @interns
+	
+@all-devs   =   @staff @interns
 
 
 
