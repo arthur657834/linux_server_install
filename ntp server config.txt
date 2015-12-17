@@ -8,7 +8,11 @@ vi /etc/ntp.conf
 注：也可修改ntp server，也可以不该
 server 0.asia.pool.ntp.org 
 server 2.asia.pool.ntp.org
-	
+
+添加配置，否则会出现Server dropped: Strata too high的错误
+server 127.127.1.0 fudge
+127.127.1.0 stratum 8
+
 客户端需要等一段时间之后在运行ntpdate，否则会出现
  no server suitable for synchronization found
  
