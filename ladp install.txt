@@ -1,0 +1,51 @@
+yum install openldap-* -y
+cp /usr/share/openldap-servers/slapd.conf.obsolete /etc/openldap/slapd.conf
+cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
+mv /etc/openldap/slapd.d{,.bak}
+
+slappasswd
+vi /etc/openldap/slapd.conf
++
+rootpw  {SSHA}w88cyyfTXRe/u7JyDzEo4RoffpMnUexM
+
+chown ldap.ldap /etc/openldap/*
+chown ldap.ldap /var/lib/ldap/*
+mkdir /etc/openldap/cacerts
+reboot
+service slapd start 或者 slapd -f /etc/openldap/slapd.conf -h ldap://3891 】
+默认端口389
+
+vi example.ldif(这个文件不能有空行，除了You need an empty line before each line starting with "dn:")
+dn:dc=example,dc=com
+objectclass:dcObject
+objectclass:organization
+o:Example, Inc.
+dc:example
+
+dn:cn=Manager,dc=example,dc=com
+objectclass:organizationalRole
+cn:Manager
+
+ldapadd -x -W -D "cn=Manager,dc=example,dc=com" -f example.ldif
+
+migrationtools 把/etc/passwd和/etc/shadow 转变成LDAP能识别的文件
+yum install migrationtools -y
+cd /usr/share/migrationtools/
+vi  migrate_common.ph
+# Default DNS domain
+$DEFAULT_MAIL_DOMAIN = "padl.com"; =>$DEFAULT_MAIL_DOMAIN = "example.com";
+
+# Default base
+$DEFAULT_BASE = "dc=padl,dc=com";=>$DEFAULT_BASE = "dc=example,dc=com";
+
+下面利用pl脚本将/etc/passwd 和/etc/shadow生成LDAP能读懂的文件格式，保存在/tmp/下
+./migrate_base.pl > /tmp/base.ldif
+./migrate_passwd.pl  /etc/passwd > /tmp/passwd.ldif
+./migrate_group.pl  /etc/group > /tmp/group.ldif
+
+ldapadd -x -D "cn=Manager,dc=example,dc=com" -W -f /tmp/base.ldif
+ldapadd -x -D "cn=Manager,dc=example,dc=com" -W -f /tmp/passwd.ldif
+ldapadd -x -D "cn=Manager,dc=example,dc=com" -W -f /tmp/group.ldif
+
+
+客户端工具ldapBrower
