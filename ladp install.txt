@@ -47,5 +47,12 @@ ldapadd -x -D "cn=Manager,dc=example,dc=com" -W -f /tmp/base.ldif
 ldapadd -x -D "cn=Manager,dc=example,dc=com" -W -f /tmp/passwd.ldif
 ldapadd -x -D "cn=Manager,dc=example,dc=com" -W -f /tmp/group.ldif
 
+client:
+yum install nss-pam-ldapd pam_ldap -y 
 
-客户端工具ldapBrower
+vi /etc/openldap/ldap.conf
++
+BASE:dc=test,dc=com
+URL:192.168.1.10    --->此处为LDAP Server IP
+
+windows客户端工具ldapBrower
