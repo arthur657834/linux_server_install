@@ -84,6 +84,5 @@ repo foss
 	
 @all-devs   =   @staff @interns
 
-
-
-
+git服务器账号密码管理：
+gitblit

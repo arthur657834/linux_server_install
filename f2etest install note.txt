@@ -1,0 +1,176 @@
+linux端：
+
+1.安装nodejs
+2.git clone https://github.com/alibaba/f2etest.git
+
+	f2etest-web: f2etest的WEB站点，用来提供f2etest服务，用户最终就是访问这个站点使用f2etest
+	f2etest-guacamole: 这是我们定制过的开源版本，方便f2etest进行调用
+	f2etest-client: f2etest的执行机客户端站点，主要提供API给f2etest-web使用，用来同步用户账号
+	hostsShare-client: 安装在f2etest远程环境中的客户端，用来修改f2etest-web上的hosts绑定
+	f2etest-local: 用来在本机安装代理服务器，并将f2etest所有访问反向代理到本地，以共享本机的hosts绑定，本组件已发布至npm，无需安装，详细使用请至系统内查看帮助
+	f2etest-chrome: chrome浏览器下的客户端，无需打开f2etest网站，即可访问f2etest中的所有APP，本组件已发布至chrome官方市场，无需安装，详细使用请至系统内查看帮助
+
+将1，2组件安装在同一台Linux服务器上，操作系统为CentOs。
+
+3.安装f2etest-guacamole
+	https://github.com/alibaba/f2etest/blob/master/f2etest-guacamole/Install.md
+
+4.安装mysql	
+	yum -y install mysql mysql-server
+	新建库：f2etest  
+	CREATE DATABASE `f2etest` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+	初始化表结构：f2etest-web/f2etest.sql
+
+5.配置f2etest-web
+	初始化f2etest-web
+	cd f2etest-web
+	npm install
+	修改conf/site.json：
+
+	port: 站点监听端口号
+	name: 站点名称，修改为自己站点名称
+	about: 站点介绍，显示在网页title后面，修改为自己的站点介绍
+	icon: 站点icon，默认不需要修改
+	dbHost: 数据库连接信息，修改为mysql服务器IP地址
+	dbUser: 同上
+	dbPass: 同上
+	dbTable: 同上
+	clientApiKey: f2etest远程桌面客户端的ApiKey，正确的ApiKey才能访问远程的API，用来创建当前用户的账号，请更改为随机值，并保持和f2etest-client中的值一致
+	guacamoleApi: guacamole的API，请修改为上面第3步安装完成的API
+	footer: 根据需要修改
+	statNav: 如果需要自行扩展统计页面，根据需要修改
+	修改conf/server.json：
+	
+	这里的id必需要与f2etest-guacamole中的名字保持一致
+
+	2003系统不支持remoteApp，2008以上Server系统支持
+	修改conf/app.json：
+
+	这里的server必需为server.json中已配置的id。program为可选参数，如果不填则直接连接桌面。
+	修改lib/sso.js：
+
+	由于f2etest系统要求必需是登录用户才能访问，因此必需要对接SSO系统才能工作。
+
+	请参考现有的sso.js文件进行修改，对接到您公司内部SSO系统。(现在内置匿名sso系统)
+	启动f2etest-web服务：
+
+	node app.js
+	启动成功后，可以发现WEB服务默认工作在：3000端口号
+	
+	如果在现有运行一段时间的系统中部署新服务器，请访问以下URL来同步所有账号：http://f2etest.xxx.com/syncAllRemoteUsers
+	
+	安装软件及配置：
+	
+	远程桌面会话主机：授权模式请选择按用户，会话请选择5分钟自动结束，空闲会话不允许超过6小时，颜色限制最大24位色
+	远程桌面授权：必需要进行正确激活并安装授权，安装时请选择企业授权，并按用户授权
+	IIS：用来部署f2etest-client，由于我们的脚本使用asp编写，因此请安装asp相关支持组件
+	设置当前主机每天凌晨自动重启：防止开机久了，系统出现不稳定
+	用户组配置：请将Authenticated Users添加到Remote Desktop Users，允许普通用户可以登录远程
+	安装curl: 将curl的路径添加到系统变量的PATH路径中，以供APP快捷方式调用
+	配置Remote App：如果是2008操作系统，需要将被远程的程序添加到Remote App，否则无法远程，添加快捷方式时请选择：允许任何命令行参数
+	安装周边软件：输入法，Flash等
+
+6.部署f2etest-client
+
+每台Server服务器上都需要部署f2etest-client，实现以下两个功能：
+
+提供API给f2etest-web调用，用来初始化用户账号
+远程桌面连接时，需要打开指定的浏览器或软件，并统计相应软件的使用次数
+请根据需要选择合适的bat模板，模板中需要修改3处地方：
+
+f2etestDomain: 修改为内部部署的f2etest域名
+appid: 修改为f2etest-web中配置的相同应用id
+打开应用： 替换为应用的程序路径
+由于需要在当前系统中添加新用户，f2etest-web站点必需设置为administrator权限，否则无法工作
+
+修改setuser.asp中的apiKey，保持和f2etest-web中一致。
+
+2008中必需要安装Remote App，并且要在Remote App的设置中：允许任何命令行参数。
+
+重要安全说明：f2etest-client的www目录必需要设置为仅管理员有权限，否则任何人都可以查看到setuser.asp中的apiKey，会有严重的安全风险
+
+
+windows 安装：
+Windows 2008R2 Standard 虚机安装：
+按照前面配置的主机 id 修改主机名，如 f2etest-ie8；激活操作系统。
+虚机配置：
+运行 gpedit.msc
+[计算机配置/管理模板/系统]，右侧的 [显示“关闭事件跟踪程序”] 设为禁用
+[计算机配置/Windows 设置/安全设置/账户策略/密码策略]，禁用 [密码必须符合复杂性要求]、将 [密码最长使用期限] 设为 0
+运行 gpupdate /force
+[控制面板 / 电源选项 / 更改计划设置 / 关闭显示器] 设为 [从不]。
+管理工具 / 服务器管理器 / 添加功能：
+Telnet 客户端、桌面体验（主要是要 Windows Defender）
+然后打开 控制面板 / Windows Defender，更新后自动设置成实时保护。
+弊端：内存消耗增加。
+管理工具 / 服务器管理器 / 添加角色：
+远程桌面服务：
+角色服务：远程桌面会话主机、远程桌面授权
+身份验证方法：不需要使用网络级别身份认证
+授权模式：每用户
+用户组：添加 Authenticated Users
+Web 服务器（IIS）：
+角色服务：勾选上 [应用程序开发/ASP]
+安装完后重启并完成配置。
+管理工具 / 服务器管理器
+配置 IE ESC，禁用
+激活远程桌面授权：
+管理工具 / 远程桌面服务 / 远程桌面授权管理器，在打红叉的服务器上右键/激活服务器
+公司信息：随便填
+许可证安装向导：
+许可证计划：企业协议
+协议号码：6565792
+产品版本：“Windows Server 2008或Windows Server 2008 R2”
+许可证类型：“TS或RDS每用户CAL”
+数量：输入你想允许的最大远程连接数量，如100
+激活后，红叉变绿。
+管理工具 / 远程桌面服务 / 远程桌面会话主机配置：
+双击连接，“会话” 选择5分钟“结束已断开的会话”，“空闲会话限制”设为6小时；“客户端设置/限制最大颜色深度”为15位（提升性能，官方文档说24位）。
+管理员不要5分钟断开吧 -- 没法单独设置，干脆设为2天、4天。
+编辑设置/授权/授权服务器，添加许可证服务器为自己。
+安装 curl：
+http://curl.haxx.se/download.html#Win64，下载 Win64 x86_64 CAB
+解压后，将 AMD64 文件夹下的文件复制到 C:\Windows 文件夹下。
+或者将 f2etest-client/curl 下的 exe 和 dll 文件复制进去。
+安装周边软件：Flash等
+访问 https://get2.adobe.com/cn/flashplayer 安装flash
+更改系统更新设置：
+不允许自动安装更新。
+
+在 Win 上部署 f2etest-client
+将 app 文件夹复制到 c 盘根目录下（配置在前面的 app.json 中的），bat文件中需要修改两处地方。
+代理服务器pac地址：修改为hostsShare服务所在的Ip地址
+find -name '.bat' -exec echo \"{}\" \; | xargs perl -pi -e 's|f2etest.xxxx.com:4000|192.168.0.23:4000|g'
+find -name '.bat' -exec echo \"{}\" \; | xargs perl -pi -e 's|f2etest.xxx.com:4000|192.168.0.23:4000|g'
+最后一行修改为当前服务的部署域名，用来统计用户的应用使用情况
+find -name '*.bat' -exec echo \"{}\" \; | xargs perl -pi -e 's|f2etest.xxxx.com|192.168.0.23:3000|g'
+将需要的 bat 配置到 [管理工具/远程桌面服务/Remote App] 中：
+如果是2008操作系统，添加时请选择：允许任何命令行参数
+部署 www 下的 setuser.asp
+复制到 c:\interpub\wwwroot 下，并修改：
+apiKey 为前面 conf/site.json 中配置的 clientApiKey。
+[管理工具 / IIS 管理器]，点开 [网站 / Default Web Site]，点击 [身份验证]，右键编辑，[特定用户] IUSR 修改为 Administrator 并输入密码。
+否则 setuser.asp 无法正确执行（没有权限创建用户或修改密码）
+防火墙高级设置：
+将 HTTP 服务的作用域限制仅有 192.168.0.23 可以访问。
+设置 wwwroot 文件夹的权限，拒绝普通用户的所有权限。
+f2etest-client的www目录必需要设置为仅管理员有权限，否则任何人都可以查看到setuser.asp中的apiKey，会有严重的安全风险。
+没有一个合适的组包含普通用户、但不包含admin，因此在系统中新增一个组 F2eTest，并且修改 setuser.asp，将用户添加到组中：
+Set oGroup=oSystem.GetObject("Group","F2eTest")
+oGroup.Add ("winnt://"&username)
+
+在 Win 上部署 hostsShare-client
+将 hostsShare-client 下的 build 文件夹命名为 hostsShare，放到服务器 f2etest-ie11（app.json中配置的） 的 C 盘根目录下。
+将 C:\app\hostsshare.bat 添加到 [管理工具/远程桌面服务/Remote App] 中，并允许任何命令行参数。
+
+下载 IE 并安装（或者通过操作系统自动更新来安装）
+http://windows.microsoft.com/zh-cn/internet-explorer/ie-9-worldwide-languages --> IE9-Windows7-x64-chs.exe
+http://windows.microsoft.com/zh-cn/internet-explorer/ie-11-worldwide-languages --> IE11-Windows6.1-x64-zh-cn.exe
+IE 10 的官网找不到，可以从其他地方下载 --> IE10-Windows6.1-x64-zh-cn.exe
+注意去掉IE的 关于 菜单中的 “自动安装新版本”！！
+
+ex.ie8.bat
+cd C:\Program Files (x86)\Internet Explorer\
+start /max iexplore.exe www.baidu.com
+
+

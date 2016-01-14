@@ -1,0 +1,105 @@
+https://github.com/facebook/infer/
+https://github.com/facebook/infer/releases/tag/v0.3.0
+http://www.bkjia.com/ASPjc/1016770.html
+http://blog.csdn.net/itfootball/article/details/46474235
+http://infer.liaohuqiu.net/docs/hello-world.html
+
+Python 2.7
+opam
+Java >= 1.7 (only needed for the Java analysis)
+gcc >= 4.7.2
+
+opam:
+cd /etc/yum.repos.d/
+wget http://download.opensuse.org/repositories/home:ocaml/CentOS_6/home:ocaml.repo
+yum -y install opam
+opam init -y --comp=4.01.0
+
+wget https://github.com/ocaml/opam/releases/download/1.2.2/opam-1.2.2-x86_64-Linux -O opam
+chmod +x opam
+./opam init -y --comp=4.01.0
+eval `./opam config env`
+./opam install -y extlib.1.5.4 atdgen.1.6.0 javalib.2.3.1 sawja.1.5.1
+
+python 2.7 +
+yum -y install bzip2-devel sqlite readline*
+下载源码包
+./configure;make;make install
+查看python版本
+如果运行yum出错
+vi /usr/bin/yum
+#!/usr/bin/python ->#!/usr/bin/python2.6
+
+安装gcc 4.8+
+http://www.mudbest.com/centos%E5%8D%87%E7%BA%A7gcc4-4-7%E5%8D%87%E7%BA%A7gcc4-8%E6%89%8B%E8%AE%B0/
+
+下载源码包
+./contrib/download_prerequisites
+
+./configure --enable-checking=release --enable-languages=c,c++ --disable-multilib
+make -j4;make install
+查看gcc g++版本
+
+# Checkout Infer
+git clone https://github.com/facebook/infer.git
+cd infer
+git submodule update --init --recursive
+# Compile clang
+facebook-clang-plugins/clang/setup.sh # go have a coffee :)
+# Compile the clang plugin
+./compile-fcp.sh
+# Compile Infer
+
+#二进制文件安装也要编译
+make -C infer
+export PATH=`pwd`/infer/bin:$PATH
+
+编译过程中出现/usr/lib64/libstdc++.so.6: version `GLIBCXX_3.4.15' not found错误的解决
+strings /usr/lib64/libstdc++.so.6 | grep GLIBC查看是否真的缺少GLIBCXX_3.4.15
+可以将高版本gcc中libstdc++.so.6拷贝过去，ln -s
+
+
+Java:
+infer -- javac Hello.java
+
+Objective-C:
+infer -- clang -c Hello.m
+
+C:
+infer -- gcc -c hello.c
+infer -- clang -c hello.c
+
+Android:
+infer -- ./gradlew build
+
+增量分析
+如果你没有改变任何文件，运行 Infer 进行检测，你会注意到，这次并没有进行分析。
+这时因为 gradle 是增量的编译的。所有已经编译过的文件没有变动的文件将不会再编译。Infer 根据编译命令获取需要分析的文件，因此，这样的情况下，获取不到任何需要编译分析和分析的文件。
+以下有两种解决方案：
+在两次分析之间运行 gradlew clean
+./gradlew clean
+这将会使得每次都重新进行编译，所以 Infer 能获取到所有要分析的文件。
+在增量模式下运行 Infer
+infer --incremental -- ./gradlew build
+这会使得 Infer 保留之前的编译结果。如果没有 --incremental (短命令是 -i )，Infer 会移除存储这些结果的文件夹： infer-out。
+
+iOS:
+infer -- xcodebuild -target HelloWorldApp -configuration Debug -sdk iphonesimulator
+和gradle 相似，需要使用 --incremental (或 -i) 使得增量编译有结果输出。
+infer --incremental -- xcodebuild -target HelloWorldApp -configuration Debug -sdk iphonesimulator
+或者在编译前清理：
+xcodebuild -target HelloWorldApp -configuration Debug -sdk iphonesimulator clean
+
+Make:
+infer -- make
+
+和gradle 类似，为了使得增量编译下有结果输出，需要使用 --incremental (或 -i)
+infer --incremental -- make
+或者清理：
+make clean
+
+
+
+
+
+

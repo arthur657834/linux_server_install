@@ -1,0 +1,77 @@
+基础环境安装：
+	yum -y update
+	yum -y install git ftp wget lrzsz net-tools
+	yum -y groupinstall 'Development Tools'
+
+安装jdk环境:
+	rpm -ivh jdk-7u79-linux-x64.rpm
+	echo export JAVA_HOME=/usr/java/jdk1.7.0_79 >>/etc/profile;
+	echo export PATH=\$JAVA_HOME/bin:\$PATH >>/etc/profile;
+	echo export CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar:\$JAVA_HOME/jre/lib/rt.jar >>/etc/profile;
+	source /etc/profile;
+
+关闭防火墙:
+systemctl stop firewalld.service
+
+gitlab安装：
+	方法1：
+	curl http://packages.gitlab.cc/install/gitlab-ce/script.rpm.sh | bash
+	yum -y install gitlab-ce
+	方法2：
+	下载rpm包:http://mirror.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7
+	rpm -ivh gitlab-ce-8.3.2-ce.0.el7.x86_64.rpm
+	gitlab-ctl reconfigure
+
+gitlab使用:
+	浏览器打开:http://IP
+	Username: root 
+	Password: 5iveL!fe
+	
+ldap：
+	vi /etc/gitlab/gitlab.rb
+	
+	ex1: ladp配置
+	gitlab_rails['ldap_enabled'] = true
+	gitlab_rails['ldap_servers'] = YAML.load <<-'EOS' # remember to close this block with 'EOS' below
+	main: # 'main' is the GitLab 'provider ID' of this LDAP server
+    label: 'LDAP'
+    host: '10.1.x.x'
+    port: 389
+    uid: 'uid'
+    method: 'plain' # "tls" or "ssl" or "plain"
+    bind_dn: 'uid=ldapaccessor,ou=People,dc=xxx,dc=com'
+    password: 'xxxxxxx'
+    active_directory: true
+    allow_username_or_email_login: true
+    #block_auto_created_users: false
+    base: 'ou=People,dc=xxx,dc=com'
+    user_filter: ''
+    ## EE only
+    group_base: ''
+    admin_group: ''
+    sync_ssh_keys: false
+	EOS
+
+	ex2:邮箱配置
+	gitlab_rails['smtp_enable'] = true
+	gitlab_rails['smtp_address'] = "10.1.x.x"
+	gitlab_rails['smtp_port'] = 25
+	gitlab_rails['smtp_user_name'] = "git@xxx.cn"
+	gitlab_rails['smtp_password'] = "xxxxx"
+	gitlab_rails['smtp_domain'] = "mail.xxxx.com"
+	gitlab_rails['smtp_authentication'] = "plain"
+	gitlab_rails['smtp_enable_starttls_auto'] = false
+	gitlab_rails['gitlab_email_reply_to'] ="git@xxx.cn"
+	gitlab_rails['gitlab_email_from'] ="git@xxx.cn"
+
+log:/var/log/gitlab/gitlab-rails/production.log
+
+
+
+	
+
+
+	
+
+	
+	

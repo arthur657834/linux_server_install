@@ -1,0 +1,17 @@
+yum -y install tftp tftp-server xinetd
+vi /etc/xinetd.d/tftp 配置文件
+disable= no => disable= yes
+server_args= -c -s /var/lib/tftpboot -c选项，允许上传文件
+
+chmod o+w tftpboot/
+service xinetd restart
+
+tftp IP
+	get file
+	put file
+	q
+
+
+
+
+
