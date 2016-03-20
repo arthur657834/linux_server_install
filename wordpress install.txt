@@ -1,0 +1,28 @@
+yum -y install httpd php mysql mysql-server php-mysql php-gd php-imap php-ldap php-mbstring php-odbc php-pear php-xml php-xmlrpc
+yum install epel-release -y
+yum install phpmyadmin -y
+
+vi /etc/httpd/conf.d/phpmyadmin.conf
+注释掉<Directory “/usr/share/phpmyadmin”>…</Directory>这一节，这样做可以使phpmyadmin不限于本地打开
+
+echo 'ServerName localhost:80' >>/etc/httpd/conf/httpd.conf
+
+<?php
+phpinfo();
+?>
+
+service httpd start
+/etc/init.d/mysqld start
+mysql_secure_installation
+mysql -uroot -p123456
+GRANT ALL PRIVILEGES ON *.* TO root@"%" IDENTIFIED BY "123456789";
+CREATE DATABASE `wordpress` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+flush privileges;
+
+tar zxvf wordpress-4.4.2.tar.gz
+mv wordpress /var/www/html/
+cd /var/www/html/wordpress
+cp wp-config-sample.php wp-config.php 
+vi wp-config.php
+修改数据配置信息
+
