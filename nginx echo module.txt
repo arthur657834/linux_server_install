@@ -1,0 +1,25 @@
+wget http://nginx.org/download/nginx-1.9.12.tar.gz
+tar zxvf nginx-1.9.12.tar.gz 
+git clone https://github.com/openresty/echo-nginx-module.git
+
+yum -y install pcre-devel
+cd nginx-1.9.12
+./configure --add-module=/root/echo-nginx-module --with-openssl=/usr/lib64/openssl
+make
+make install
+
+vi /usr/local/nginx/conf/nginx.conf
+location / 中添加
+
+if ($host != '192.168.1.250' ) {
+echo "not equal 250";
+echo $host;
+#       return 403;
+}
+
+
+ps aux | grep nginx | awk '{print $2}' | xargs kill -9;/usr/local/nginx/sbin/nginx
+
+
+
+
