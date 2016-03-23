@@ -1,3 +1,5 @@
+https://www.nginx.com/resources/wiki/modules/echo/
+
 wget http://nginx.org/download/nginx-1.9.12.tar.gz
 tar zxvf nginx-1.9.12.tar.gz 
 git clone https://github.com/openresty/echo-nginx-module.git
@@ -12,11 +14,38 @@ vi /usr/local/nginx/conf/nginx.conf
 location / 中添加
 
 if ($host != '192.168.1.250' ) {
+echo_before_body hello;
 echo "not equal 250";
 echo $host;
+echo_sleep 2;
+echo_after_body igor;
 #       return 403;
 }
 
+
+echo_foreach_split '&' $query_string;    # 将查询字符串以&分割 
+
+# subrequests in parallel 
+echo_location_async /sub1;
+echo_location_async /sub2;        # 发送子请求到$echo_it对应的location
+
+# subrequests in series (chained by CPS)
+echo_location /sub1;
+echo_location /sub2;
+
+echo -n "hello, ";
+echo_reset_timer;
+echo "$echo_timer_elapsed";
+echo_flush; # ensure the client can see previous output immediately
+echo_duplicate 3 " END ";
+echo_after_body igor;
+
+echo_read_request_body;
+echo_request_body;
+
+echo_subrequest_async POST '/sub' -q 'foo=Foo' -b 'hi';
+echo_subrequest_async PUT '/sub' -q 'bar=Bar' -b 'hello';
+	  
 
 ps aux | grep nginx | awk '{print $2}' | xargs kill -9;/usr/local/nginx/sbin/nginx
 
