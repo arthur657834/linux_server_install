@@ -26,7 +26,40 @@ gitlab使用:
 	浏览器打开:http://IP
 	Username: root 
 	Password: 5iveL!fe
+
+gitlab https配置：
+	openssl genrsa -des3 -out mesos-slave.key 1024
+openssl req -new -key mesos-slave.key -out mesos-slave.csr
+
+cp mesos-slave.key mesos-slave.key.org
+openssl rsa -in mesos-slave.key.org -out mesos-slave.key
+  
+openssl x509 -req -days 365 -in mesos-slave.csr -signkey mesos-slave.key -out mesos-slave.crt
+
+openssl genrsa -out mesos-slave.pem 2048
+openssl req -new -x509 -key mesos-slave.pem -out mesos-slave.pem -days=3655
+ 
+ 
+mkdir -p /etc/gitlab/ssl
+chmod 700 /etc/gitlab/ssl
+cp mesos-slave.key mesos-slave.crt /etc/gitlab/ssl/
+
+gitlab-ctl reconfigure
+
+这时cleint 克隆报错，不知道怎么解决
+clinet：
+	办法1:git config --global http.sslVerify false  
+	办法2:export GIT_SSL_NO_VERIFY=1
+	办法3：
+	[http]
+    sslCAInfo=/path/to/your/certificate/file.pem 
 	
+	或者
+	git config --system http.sslCAPath /path/to/cacerts
+
+
+
+
 ldap：
 	vi /etc/gitlab/gitlab.rb
 	
