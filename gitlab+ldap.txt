@@ -28,7 +28,7 @@ gitlab使用:
 	Password: 5iveL!fe
 
 gitlab https配置：
-	openssl genrsa -des3 -out mesos-slave.key 1024
+openssl genrsa -des3 -out mesos-slave.key 1024
 openssl req -new -key mesos-slave.key -out mesos-slave.csr
 
 cp mesos-slave.key mesos-slave.key.org
@@ -38,6 +38,26 @@ openssl x509 -req -days 365 -in mesos-slave.csr -signkey mesos-slave.key -out me
 
 openssl genrsa -out mesos-slave.pem 2048
 openssl req -new -x509 -key mesos-slave.pem -out mesos-slave.pem -days=3655
+ 
+ 
+mkdir -p /etc/gitlab/ssl
+chmod 700 /etc/gitlab/ssl
+cp mesos-slave.key mesos-slave.crt /etc/gitlab/ssl/
+
+gitlab-ctl reconfigure
+
+gitlab https配置：
+
+openssl genrsa -aes256 -out mesos-slave.key 8192
+openssl req -new -sha256 -key mesos-slave.key -out mesos-slave.csr
+
+cp mesos-slave.key mesos-slave.key.org
+openssl rsa -in mesos-slave.key.org -out mesos-slave.key
+  
+openssl x509 -sha256 -req -days 365 -in mesos-slave.csr -signkey mesos-slave.key -out mesos-slave.crt
+
+openssl genrsa -out mesos-slave.pem 2048
+openssl req -sha256 -new -x509 -key mesos-slave.pem -out mesos-slave.pem -days 3655
  
  
 mkdir -p /etc/gitlab/ssl
