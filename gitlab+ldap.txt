@@ -78,7 +78,9 @@ clinet：
 	git config --system http.sslCAPath /path/to/cacerts
 
 
-
+git记住帐号密码配置：
+[credential]
+  helper = store
 
 ldap：
 	vi /etc/gitlab/gitlab.rb
