@@ -66,6 +66,10 @@ cp mesos-slave.key mesos-slave.crt /etc/gitlab/ssl/
 
 gitlab-ctl reconfigure
 
+Peer's certificate issuer has been marked as not trusted by the user:
+git config --global http.sslVerify false   not work
+git config --system http.sslVerify false   work
+
 这时cleint 克隆报错，不知道怎么解决
 clinet：
 	办法1:git config --global http.sslVerify false  
