@@ -1,17 +1,6 @@
-yum -y install tftp tftp-server xinetd
-vi /etc/xinetd.d/tftp 配置文件
-disable= no => disable= yes
-server_args= -c -s /var/lib/tftpboot -c选项，允许上传文件
-
-chmod o+w tftpboot/
-service xinetd restart
-
-tftp IP
-	get file
-	put file
-	q
-
-
-
-
-
+U2FsdGVkX19TRm3g2paPIQ2qdvkURNdylvIGnMPCLvXa8jWCJQSsiEKq0awQuYW1
+7SrxvtzKN5EGbaJbjr0dOWv3nvc/hmUAuee7pgDR5VdRa7penQhMr4Pc8wEaOflx
+YG3UNWGdZqi0Ud4T/qTKnEz27BkTJ0dAdGS52n/q6SHjEEVuP25yoPy4hnJMJ38i
+miW6TsZUgfVVrKtw3+qpcwP5F2TVOYp8uzqYgzQMwRHo+imeNNgjgwThnV5FJ4a3
+L0qLrCwiqdVDf+TPVqylMwo/8Ixl0I52evRZ7kHduG1+erRtaIGBh/jLDqFDHIiu
+UkgfmEhHbfBshYCaFZa30RYmOa55eQHr136eIB3kRE6ydeM5XITnQ8LG17oOVR4J

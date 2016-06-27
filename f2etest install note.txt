@@ -1,176 +1,211 @@
-linux端：
-
-1.安装nodejs
-2.git clone https://github.com/alibaba/f2etest.git
-
-	f2etest-web: f2etest的WEB站点，用来提供f2etest服务，用户最终就是访问这个站点使用f2etest
-	f2etest-guacamole: 这是我们定制过的开源版本，方便f2etest进行调用
-	f2etest-client: f2etest的执行机客户端站点，主要提供API给f2etest-web使用，用来同步用户账号
-	hostsShare-client: 安装在f2etest远程环境中的客户端，用来修改f2etest-web上的hosts绑定
-	f2etest-local: 用来在本机安装代理服务器，并将f2etest所有访问反向代理到本地，以共享本机的hosts绑定，本组件已发布至npm，无需安装，详细使用请至系统内查看帮助
-	f2etest-chrome: chrome浏览器下的客户端，无需打开f2etest网站，即可访问f2etest中的所有APP，本组件已发布至chrome官方市场，无需安装，详细使用请至系统内查看帮助
-
-将1，2组件安装在同一台Linux服务器上，操作系统为CentOs。
-
-3.安装f2etest-guacamole
-	https://github.com/alibaba/f2etest/blob/master/f2etest-guacamole/Install.md
-
-4.安装mysql	
-	yum -y install mysql mysql-server
-	新建库：f2etest  
-	CREATE DATABASE `f2etest` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-	初始化表结构：f2etest-web/f2etest.sql
-
-5.配置f2etest-web
-	初始化f2etest-web
-	cd f2etest-web
-	npm install
-	修改conf/site.json：
-
-	port: 站点监听端口号
-	name: 站点名称，修改为自己站点名称
-	about: 站点介绍，显示在网页title后面，修改为自己的站点介绍
-	icon: 站点icon，默认不需要修改
-	dbHost: 数据库连接信息，修改为mysql服务器IP地址
-	dbUser: 同上
-	dbPass: 同上
-	dbTable: 同上
-	clientApiKey: f2etest远程桌面客户端的ApiKey，正确的ApiKey才能访问远程的API，用来创建当前用户的账号，请更改为随机值，并保持和f2etest-client中的值一致
-	guacamoleApi: guacamole的API，请修改为上面第3步安装完成的API
-	footer: 根据需要修改
-	statNav: 如果需要自行扩展统计页面，根据需要修改
-	修改conf/server.json：
-	
-	这里的id必需要与f2etest-guacamole中的名字保持一致
-
-	2003系统不支持remoteApp，2008以上Server系统支持
-	修改conf/app.json：
-
-	这里的server必需为server.json中已配置的id。program为可选参数，如果不填则直接连接桌面。
-	修改lib/sso.js：
-
-	由于f2etest系统要求必需是登录用户才能访问，因此必需要对接SSO系统才能工作。
-
-	请参考现有的sso.js文件进行修改，对接到您公司内部SSO系统。(现在内置匿名sso系统)
-	启动f2etest-web服务：
-
-	node app.js
-	启动成功后，可以发现WEB服务默认工作在：3000端口号
-	
-	如果在现有运行一段时间的系统中部署新服务器，请访问以下URL来同步所有账号：http://f2etest.xxx.com/syncAllRemoteUsers
-	
-	安装软件及配置：
-	
-	远程桌面会话主机：授权模式请选择按用户，会话请选择5分钟自动结束，空闲会话不允许超过6小时，颜色限制最大24位色
-	远程桌面授权：必需要进行正确激活并安装授权，安装时请选择企业授权，并按用户授权
-	IIS：用来部署f2etest-client，由于我们的脚本使用asp编写，因此请安装asp相关支持组件
-	设置当前主机每天凌晨自动重启：防止开机久了，系统出现不稳定
-	用户组配置：请将Authenticated Users添加到Remote Desktop Users，允许普通用户可以登录远程
-	安装curl: 将curl的路径添加到系统变量的PATH路径中，以供APP快捷方式调用
-	配置Remote App：如果是2008操作系统，需要将被远程的程序添加到Remote App，否则无法远程，添加快捷方式时请选择：允许任何命令行参数
-	安装周边软件：输入法，Flash等
-
-6.部署f2etest-client
-
-每台Server服务器上都需要部署f2etest-client，实现以下两个功能：
-
-提供API给f2etest-web调用，用来初始化用户账号
-远程桌面连接时，需要打开指定的浏览器或软件，并统计相应软件的使用次数
-请根据需要选择合适的bat模板，模板中需要修改3处地方：
-
-f2etestDomain: 修改为内部部署的f2etest域名
-appid: 修改为f2etest-web中配置的相同应用id
-打开应用： 替换为应用的程序路径
-由于需要在当前系统中添加新用户，f2etest-web站点必需设置为administrator权限，否则无法工作
-
-修改setuser.asp中的apiKey，保持和f2etest-web中一致。
-
-2008中必需要安装Remote App，并且要在Remote App的设置中：允许任何命令行参数。
-
-重要安全说明：f2etest-client的www目录必需要设置为仅管理员有权限，否则任何人都可以查看到setuser.asp中的apiKey，会有严重的安全风险
-
-
-windows 安装：
-Windows 2008R2 Standard 虚机安装：
-按照前面配置的主机 id 修改主机名，如 f2etest-ie8；激活操作系统。
-虚机配置：
-运行 gpedit.msc
-[计算机配置/管理模板/系统]，右侧的 [显示“关闭事件跟踪程序”] 设为禁用
-[计算机配置/Windows 设置/安全设置/账户策略/密码策略]，禁用 [密码必须符合复杂性要求]、将 [密码最长使用期限] 设为 0
-运行 gpupdate /force
-[控制面板 / 电源选项 / 更改计划设置 / 关闭显示器] 设为 [从不]。
-管理工具 / 服务器管理器 / 添加功能：
-Telnet 客户端、桌面体验（主要是要 Windows Defender）
-然后打开 控制面板 / Windows Defender，更新后自动设置成实时保护。
-弊端：内存消耗增加。
-管理工具 / 服务器管理器 / 添加角色：
-远程桌面服务：
-角色服务：远程桌面会话主机、远程桌面授权
-身份验证方法：不需要使用网络级别身份认证
-授权模式：每用户
-用户组：添加 Authenticated Users
-Web 服务器（IIS）：
-角色服务：勾选上 [应用程序开发/ASP]
-安装完后重启并完成配置。
-管理工具 / 服务器管理器
-配置 IE ESC，禁用
-激活远程桌面授权：
-管理工具 / 远程桌面服务 / 远程桌面授权管理器，在打红叉的服务器上右键/激活服务器
-公司信息：随便填
-许可证安装向导：
-许可证计划：企业协议
-协议号码：6565792
-产品版本：“Windows Server 2008或Windows Server 2008 R2”
-许可证类型：“TS或RDS每用户CAL”
-数量：输入你想允许的最大远程连接数量，如100
-激活后，红叉变绿。
-管理工具 / 远程桌面服务 / 远程桌面会话主机配置：
-双击连接，“会话” 选择5分钟“结束已断开的会话”，“空闲会话限制”设为6小时；“客户端设置/限制最大颜色深度”为15位（提升性能，官方文档说24位）。
-管理员不要5分钟断开吧 -- 没法单独设置，干脆设为2天、4天。
-编辑设置/授权/授权服务器，添加许可证服务器为自己。
-安装 curl：
-http://curl.haxx.se/download.html#Win64，下载 Win64 x86_64 CAB
-解压后，将 AMD64 文件夹下的文件复制到 C:\Windows 文件夹下。
-或者将 f2etest-client/curl 下的 exe 和 dll 文件复制进去。
-安装周边软件：Flash等
-访问 https://get2.adobe.com/cn/flashplayer 安装flash
-更改系统更新设置：
-不允许自动安装更新。
-
-在 Win 上部署 f2etest-client
-将 app 文件夹复制到 c 盘根目录下（配置在前面的 app.json 中的），bat文件中需要修改两处地方。
-代理服务器pac地址：修改为hostsShare服务所在的Ip地址
-find -name '.bat' -exec echo \"{}\" \; | xargs perl -pi -e 's|f2etest.xxxx.com:4000|192.168.0.23:4000|g'
-find -name '.bat' -exec echo \"{}\" \; | xargs perl -pi -e 's|f2etest.xxx.com:4000|192.168.0.23:4000|g'
-最后一行修改为当前服务的部署域名，用来统计用户的应用使用情况
-find -name '*.bat' -exec echo \"{}\" \; | xargs perl -pi -e 's|f2etest.xxxx.com|192.168.0.23:3000|g'
-将需要的 bat 配置到 [管理工具/远程桌面服务/Remote App] 中：
-如果是2008操作系统，添加时请选择：允许任何命令行参数
-部署 www 下的 setuser.asp
-复制到 c:\interpub\wwwroot 下，并修改：
-apiKey 为前面 conf/site.json 中配置的 clientApiKey。
-[管理工具 / IIS 管理器]，点开 [网站 / Default Web Site]，点击 [身份验证]，右键编辑，[特定用户] IUSR 修改为 Administrator 并输入密码。
-否则 setuser.asp 无法正确执行（没有权限创建用户或修改密码）
-防火墙高级设置：
-将 HTTP 服务的作用域限制仅有 192.168.0.23 可以访问。
-设置 wwwroot 文件夹的权限，拒绝普通用户的所有权限。
-f2etest-client的www目录必需要设置为仅管理员有权限，否则任何人都可以查看到setuser.asp中的apiKey，会有严重的安全风险。
-没有一个合适的组包含普通用户、但不包含admin，因此在系统中新增一个组 F2eTest，并且修改 setuser.asp，将用户添加到组中：
-Set oGroup=oSystem.GetObject("Group","F2eTest")
-oGroup.Add ("winnt://"&username)
-
-在 Win 上部署 hostsShare-client
-将 hostsShare-client 下的 build 文件夹命名为 hostsShare，放到服务器 f2etest-ie11（app.json中配置的） 的 C 盘根目录下。
-将 C:\app\hostsshare.bat 添加到 [管理工具/远程桌面服务/Remote App] 中，并允许任何命令行参数。
-
-下载 IE 并安装（或者通过操作系统自动更新来安装）
-http://windows.microsoft.com/zh-cn/internet-explorer/ie-9-worldwide-languages --> IE9-Windows7-x64-chs.exe
-http://windows.microsoft.com/zh-cn/internet-explorer/ie-11-worldwide-languages --> IE11-Windows6.1-x64-zh-cn.exe
-IE 10 的官网找不到，可以从其他地方下载 --> IE10-Windows6.1-x64-zh-cn.exe
-注意去掉IE的 关于 菜单中的 “自动安装新版本”！！
-
-ex.ie8.bat
-cd C:\Program Files (x86)\Internet Explorer\
-start /max iexplore.exe www.baidu.com
-
-
+U2FsdGVkX1/2zz55MYGqrt+uysJ1Da2lXULZh/QHl518TsCpJx9qaGVfb93ohVxS
+TwcuI0FnweH5gq6C+wW/0Uk/eG+gVfpLrIasNyMxMhl0SzEFWjh28hLYVxP1uXDG
+umVzDWtH6I63T/cY19KzrgJs01dX1sZ87+gcCKwmiSp7P5iUwD0EChIJeMwvRDeH
+LP0lQz22CGNV1JjDnAdixnm9K5m4UFoG0JeqdsuIQnVY83SgVLcwbv8kc+KD19AH
+6ivH3pF5cf7fwdqR/kXCTv440zCBYS91z7bJeWDfGI3LqLTZ2G0eFA8gsZQiyFJj
+T9BbGiLQVM9zF/OP55HLiAttlTs4V/B2PBb1mrywg9RJ9dOmiJgLlIym1ZW6TvGt
+8NbU/FJTCYN2hI47PTaxpMSRgmA4RYcirmfi7/PtJ4sG5V6WxvfI6KZLBIWHm6qG
+5p98VQ84p2WZxKKR8C1wfp98O415aW44vzQbPuQSHzCxYPt+HRUxnkh/8ujUiTid
+ZUId9lGa+uDvJ5Hnj+Iz7Bd0R0iuvhivs9qUgdmr0a4s4DpGIaTX2M1TOx0Am8Jo
+q7aMTFlZhKJz737quh4lyUhzLIW1cKAkwtxtB+ymB+c0L5yjqZtJvsgikPsQAxa3
+r0A985LsvYFe6OyddeWVn7NdjFuvLa3Y1eTEkLuVztXK18WYNVLXrUbhMkPwkj4A
+rmfbE2cJVRZXHKetdbGEpJBR5rB5YaRV4OQ+A4xOsvQVdDUl+c/lqauU2Drr9ySG
+w9cxx/j+vZx5YMYDPutI0IzSmwqY69Y3w1lvvX6aEkyQB0zNaJXQCfQamAF4cAKv
+8roSVlHahYXnr9V8wSu5JiP0STL00IGe+sNGkRHuyTUWmQvCS2GCrGJdb1D8b5lP
+9a/Nte/mAtSnLhrbE4yzgE5kFYxfBnWilh3ZGH9o+gjM9bU2LlH36MEYyolKNMhI
+1PkV0T7wARMLm2PwoiWjIiyE9pmgkvizI5DQx0AfJ8atBrIOLyEn5yc7TjoF79/D
+wQ/c7+T1crD6KU9oGQ6btlcRypxXeIgZR+rWxWoXqk8A8ulYTX4ZGDCmLXuNpXQN
+vnmaUqsXptHtdmh9hBrTo43G35iTdaMjKsy86JUmYmwEw2TjmXNQESEOgDGObZoL
+5bdeKFOevWqx1jM7JbU0nvuKiTl9yjkOVwqNvBl8qOr80VQ6KOxmsafu8L3LyOT1
+r8O4EsFe4P9doa2uVQMApc/BAhrvCXjoVVrpqggvrnJUwK+UItPSW+iy4db+Tc1b
+N5ePWc8N+flQO67h4Cjn2pc8Jqbx0+MM6H3KWo34mO+rsjLiKajlezI7AGOg/Abl
+c333iaLxx4V6NzT3S0AtQgrUjdTfxs0uKy9uMNAaT4ELD7nFzu+DgEdfQZmyuW2h
+5LPHQlEOx6ccEpfjJEcKvM6I6FFS6bDkOYEtYRYFJ5hIL29OvpeVbSDK9dHWq0Rm
++p9EtQ44jS6tze6mieZcgqr2TOMisSSPLvgclqLuWfTMLUzysj2aOOMFX3dN4nxI
+HgflnXIeTPxKwOvdqDIMlW+s3J34GPaO4RJSx1sIjEAAn/AgNEKTxdc9Nbe5kyhm
+vROSNFIV95KfUB8x/fMCNvOEvI7fy8Ftsz9GYmATuBIYMh2IIqK8BqyYahzpxMPV
+wxRgcyTsGPlKOUCXbFv8OWu5qe9ok9GfWWdaiUoHOY1hYtP+thy27gYR5KIl75Ge
+eDbkfbQJJMXlVs/p0GGWgwBPzJNvBfF67hfeKn7rIXEravxNfEss+x+rW4g6fwLe
+fa1UJNH9V5Ya1tXbZ311Kl1+XSCEzlLZX6DWKahCJlNFeVeMXmNBnUj2+KweqPf0
+I1ivTMEM6WM1eBO1G7BMbxM8AcX/bkx2w4VOCNas75jPYgfWpCHYgDzcc0Mnxt9p
+sTrTk5nGUJ571AaFnolilCm+C4NzfQ3DHgHsWR3phZxxuIxTDnFmaidt1kqrFx9s
++uuh0MSub8ZjFdsaa6etvXZXFaJ9Y7nBzI5JHVIJn/wCOaJgWuLJsuIpDmgmnAFW
+77q7dlP9Js7zBwrfVfie9NNN54SnoGpC2Wx/yI+Wam30BQpHz87jwdELxPvK6zWd
+fMvr3XJlAs7e9VqxZFyOOlslF3VuMCgg1rcJkzPVUbiZVWl0fFjiAEtX9gXcLXsQ
+Bh7tKE0XNjsi7RP+PWXYF03zlUhGh+wbGBGmPDWInFWEwjvJVpuhecZaH4nvbQSw
+eIQ8fAnXwUuywGBb7SBQwQyJ1aI5gaiY+n2SdFg38RgluN+RUqUXP90/lzs35QZR
+cNtJnUxArnmSCNF8pJAKzV3MBjp2w49Yjv2EY7hU/w/Kyj+k5dxWNgNzIiMtrhno
+4fmiv8JYApx9kwf7f580BJdCStEiSSfZ9aGbe83yskBXcykKygNaQlJBCA4MMpA0
+/dXuL+zmL1HUm7DPlzlQDEP01bvtpTxJszDzlpaDnc+HD5KSpa2Q8MJuBq3Ek3Ww
+nBCtY5/uQyN2xxlEmmuluCjkAUAUmFkQL5V/cW+dc9o74TSbKnbuCDDJpiOachWw
+igoP/boKBUuLU6E/oH0CLMoETaVTHYVQ5AUe622YrB+g5IsHEQIwmkWRVEZHBeEM
+2nEvbdFDi61m0/RT1oCb0W7GtvtF6p+d3pNwIk8r1xlzKarsD3CMfLloVVWjJHZO
+jScxDVi1Twjm7P2/JaR5WGM6v8VqCoXi5q1478w2PJBJu6VBZr7BhzOFRgKe/+zX
+5vVeHaSl8UYqJ62SYlUfgIvqNxJUntyKnHi1W2HGKquM4syqdl5JEwFpPguD7DIe
+8EhozW4GnHZQjQNE6LNZYGMONov9FKPY6QLV3mZY+Y4r9JsOTVrXjEmGKJrYUPo8
+2l9P9pK2seSknfVqf125pP9wtjUhUlRryMu9AMYXZmIqAST2DO2KuGIKVFsBkL4A
+M6K3xzcNDgHTz4TT0cn4pvcrkZNWnr4DFhCRG9spRsFauBvLeH3cZw0BfVR8jKdN
+yv2oqw4iureb/pTe73xNpYcXlTmA5uehrTgFFAnoaaNZAhekpmjkty5IrDEHYxwf
+he73olJAtZhCWMg75X1qzdZmeLKSfFIDSgU1OMO1zsDBEPeXmVulVGFrr+I7khz3
+cFcepwaXApWkqR6381aJmhlXEXNfRqmuOMBi9lv57hXp/KYNXNNtUAwsRT4jyiVj
+iRBQrk7QbtWkFq/OET5uhOxwoxxqbZLXFKqJTLrLfQQfzjhYbCMCngupaOp8yk2Y
+YMbhBdrObqoWAvVboqwlcNKHizWPof/tjLh0Kiz9uxCnGOT6KRR4CpZK+BJaj+Wr
+2kShtketFx058+BafYfQOt6pwcoiAk2iIUIhVmrp65CVgX2wtuZ5K5A3hWhgrNPC
+++x26fveE0aQj2GAADtJDFJdb+vRjsjoEKJFpBTQI8OM8CPIE/LNXTJi4HUgXuo3
+ftnysRJG47HVkStE2chu6JG/Qstv69TlvgjKjI/XFEeL9vwDRyMprkaop9jxoOm5
++PXM6ix38wJiDQzKjoJoQKjIWRz52sWTSSYl+e1/GVfLT/wjccVBRxNjTSwZP9CD
+qOXct72TKdhx7XZzlwPI8Si5zTW82Qa54dTVLsn9S97VhudfVg7SJJpiFLe/uUdq
+1R6yuMtWj4hxO0DsEA9MNk2bfeWPy/O5XkDNesPsZEUmKNdx8jRm1qe7JR0DwDDj
+sZw4q0FNamd9r09AXp9BaGvCDREiT3Qgn2V/fKqOHbHaIC02cxaPgmCLGz6pD8fn
+MVxBfDwEB+9UxWkYU8hwLe31HRCwDnAzsF+u6grGXG7lpkXb/OeRzejcYVpaucpd
+geVcSbyorI4EgwxfAX8V+be5USnjP50RmpECRyRJSeMdHXI6DZk6UwrgLXRmyL+e
+T2w+yTmdrS0QNPnFgs+LJ9wPe1+LsDj4e0/y0ZyTEHiSy8yO4sM6QyS081s+6NcC
+CFyWtrcn8hkZqN6lCIEOieD566PL4Glce5+Q8CFgiyRyyGeOrZcbhL5DD79W8A1+
+g90/8dzXLpWH6T7pfaBmhngj3TQEW6cH6aEBm5DxrH2rHC7KXxXzJcsqznk+bstA
+NOVjX853K7WVICN06Ld3PeS9PbDVQ9pr6Hbj3Mdwr6hJ5rXYXL89WqPb1FlGc+9f
+jPdKezHeJHZDtaOE2LBkJKgbr7s0MSUBZwpqt4qUnCZ5G90UIiuZEibfRvpfEvUJ
+7D13oyXqrM/6PJ3QCLpdYmR0mUaxZWd9+iEmohGRUKqdqVcAq08xwOHAQPZmFQO3
+6GQurGci33untb15qjb42ecId8NJTpWaf6ORmmvmCqWGmUsrgv929+rk2+WEmg9b
++u9Q6ItHInYltAXHtdpu31yoE5lRdDAqFkpYx2ARS1MvbD3LgpRNAMOUBOHsg/sU
+xNmeuhT+UmOhgmo4X0Ya6VEz620QfDzGVu74x7KmDCqNHPxwIho/t8hiIMKB5v8J
+Wtj2D15IpmtVS6w823XJsi/VH7/yy5nymClPwR9VE+EBwHVKA7hbz9qthU9qITDI
+MphWwo6C198/aZKMzc6P/mrbvC7p5bVFz6/S4zyPHMNGPecsCDwho7ovGfBQCvJv
+D3L9Nklhw9zJDZvzzAeQo3jN1NOcODNIorlbWCs/r5jqKq3qAbupCljmJWFeFVkY
+LVwR3sK9553WXdz8B+AM/QMdGGgHzm25wxEyyz7wtAY503wvapgYP0coCBkT3ymd
+7fH0N/+lW9cBzHCdevebayhIqZ0r1pMrZoKGGfTBiyf+Qsp3inzR9EyNpfx/9pNw
+pLnJTuISmS05H6OSJiXOCaDRXxbkrnvgN7E601kVOUzXHWqXyNgeQ/Kh0USolzy8
+l2PDAJv2s807b+m5s5ckQ0cPu+DB5R9etPz8qLd8DuiastfH70EXT3avU3YduvEW
+cbkYjiNgUPUPQ9SZ/Xu8HRK/Ie+ZH4GItx47nTP2MEDogZzXBegSMHAPfv+0MA4I
+RxZkw00TQ3L8GHPWo9Xp20Aftnudtm9mKjXW1AaPYnrQYiKJOFxCUM4g3qcLO2d4
+kEIR2frELxf/grBHrWdNvWbfKxXCbLCzdGB8EJV1SMpU/e1ZQJ5Ez6cP/VTl2eAs
+KX1ed19e610URWBljJfUly+mccfI98ChlenhXNHDQeJdg50Py+CiVGlhhHtyFQ+P
+EtW3zVTnV/yXFvDDEk48jqbFV7qBK4iUHirm2dvZH3xsbgiGQqp6vSxFJEwZGEPs
+/9GraU7Ng8I755s+oB/Oe8mQDJIn6D11d6+8h7Tfv6qAv+Hur+TepRs+l2BEZ9DO
++jDNkUh7UN0arc35UHjVv/znOWSg/5Ut3iTJcrcI+Rzm48gx1hKQWKl5Kq9ZuakF
+FDcihiU7gO/a9hkj4MYPQqRhxXYbkkqqIDnMaPsiwoRU7iaJq9bBBBAzlEEATtrV
+6NltNEaK0Pk9EIbBXL8q6qp0HlAgp3uHeb/GqrcDOK6Fqa4gShar4479TI+Ly447
+ylJCtdw0T/dUlEQdPv5sWCoplXw9UrmNYMKhmBNINIXkAy4uVaRwBgdZuUey2eQ0
+0VVxUYEgZqqcb9dqIVp45I6n9OI5NuYHU40IHxnPAA9uMvuLZjolPTVc5MIkKrXs
+Gu+ORBJr0v4XAlfKmJzDr5Pfdf+w//jB1TNeXugrhXty3lvSHqHnCJqxkaaXUzm0
+YjK+MgejCDzBKDM2wJW4Q/DoCPdWA8+xmQZIQod5/tJo4a8J7uTJNCy2t13zokLt
+RKVYh+lh9BlbIdZWcUtPvpMslj14YUYxuVvMlF0ZlX3jKAyChw9+b+OWPyYwkRWe
+zx5e3cRRXp7jPC5WD2ZwEh9B2zqWYJ5Q1phC/i5bXBEeUasAi0m+GqqBdhrv4GnN
+HJucDzjb6OfgBLsPFGjji8xOIlefMxk3JszRwOlCqdxa0P3mKQqYDliZQQ02hvmP
+LQAq0WSi8zeU0iyqeAXQ4h1herMvpAAMAQvEGqYNNeFhFJFJUUI9fuGzLt/Cq5Ar
+TNiEDVLE+/MhXropxoROtgFY3+b1M1Xw1mQyS6AApiS9W5N8RskEwhogA982mN8b
+msm5y7e5PR9DmJK/+I28Q5kb3g5i26dFWE5gZ29qby6kBs0WH2WV+fpy+KmUYe2H
+dfubjmMgAm9Dr72EBTUIHAajTq2QwZQBJt3ohd16SsCsZDE44ewfcztKg08d4WDX
+HUyvOnnT7JHJLQ+b3wiTULIPngfu/udo10M4Xi0rnUPm2afP08+eKIDNtAEtEEcv
+3+gtLAECioRQ3uas2yKoqJhjPBicDs03lVnT9BqlOiyoJJ/V7yerKChP0yBnvo1U
+wmdqRuQc/6hkSoNDbq/U6LGjgk3wxHyBa3KyYAoadlNwrEAUhOr+ufgxwjvSrxsG
+oGGLzvddH0GyJGaqoSOHqNImqbgi7rFMrdiCwhVe6EUIY13LVHxySO5PeZfG75+G
+r942m2keArDCz+hYATpARp/+CgDYsZhiDzsYIocskITaz6d5iM50xYw3raYKjyBz
+XPjGxS4vYQF0aLap61A7ti9HezbQ0PoDbRxI7rURVxxhYbAVvCzHnDLVeOiF9WLk
+sM7tO7W+HgpwreqyjnhMZb/hcxvpbMxreIz/K9HaDqEy53r3VItk15kgIq4zsTm6
+FeQ1Q0Rfir6VYJxkOvTMtMtjQcHL9tqLW9MGHT63Ra6WJqbCg2lNQrl9xJHbXPF5
+PMI+ZkLljkb+td9+rTqPsnAf8fYVCNNCkRywxUt5Xk1pCy0x2RWAWtXsoSKrh3Hb
+lLsFauhvXfPDr8UUrm2LUsoYd7NEGSIJdhm9prCniKHCuUXoH8Cpn0UOvDjE+Jb0
+AM0y55u1sDai/FiZr8pxN1Y0dkwKn6tFYONsRSnJ8IThDJEa7krEbqgyYrz/L36t
+CjAsF2gRIngmfHtKhZzLQDGOuNjng4CRrQzWbMdPckkpZ1k7O1mVf0nbXwDsh6gw
+5jmKTQruoDCDJZVZWrqnQlAfG4g7ZElFqTGofutQk0nir/hkKRUD3EFKPWzPGiy2
+gmZKY81nvJY1CPKgy2jQ/bK46es6aZ8gBVaHchIskoMrZhhCgN7xq/22z1hAZafh
+vjuK7bUJBGFYm7MOxluKFmZ+AAWvVBDBNWX7TX+JvW36e0vpgkbo9UP7iEW13GM8
+QGJM0tj4PYrqXMYVWAFt3bb90LR5e+g52CjKcD3dlt/ZY/JoaWTlm91SXkATdPZ+
+7s5ilmj52vcgSxwwaXxRotXK+PpZ5yCaio8WThVgoZahuefoiN9XX2KZNRVjOAgO
+O6h13b8v5hh7FUpXlGh+ryWw7A8OrtlR45YMY5U8D2Dzt45gzRrvQTYkjS85FbuG
+C33JdMYTh0cyyoP+Tx0jp6gRGdThA26m9XRWFJta38SujK6PFSWKNlab32FBedrH
+f4f3mDV+7b3SqX6GCG4YP8nQfGGIdsa6JkcYEPkWNFAHvRxr2U//FjMahVvq8L6/
+/i3whVt0ADcN/buNRylVjKkZ6nQCFK8MqKg9+ccmTZ7VSbZ6W5BTpuqIF+3kmMJh
+6lRtxkUJVMaOnHEtA560PT97Le6G/CLCF4+BHMoefhQTHWiiAhE9odqxRv8Mtd/w
+gQImQxfn5itSy5YSuugul2aqNxOtk3EetQEH/Kgu02/GThM4PM1VRxKnW+6gCrpl
+wGxPYSX5+xlLAM0+GwetjYFPLQvkmfVSIXn5sf15wHlA6DBMh42ECPH+iiDyDzzm
+XoZnCRxoUP0oAvlQm2y8g/w5Ff4ab/lIj3u+1i6/UrDP/1rNDjFdse3PKCAC0XG/
+F80OkceLaZPc6Zt1yklp8js0XIKixOKDLh8H0EzhjFpDImcH/Qr43oBJ+IL06HMY
++zYRMpF9cN9viKyaebXrzOD39bGzR2JtYI3wgcI+GQhTbA2iXULoqCT2Vr6fu32b
+Wo+XfgDR/Yb3EmiwJXvoaHXvxXyLTQZl+sFrpk1QRmUQqETCCwEa/grH17h37hMq
+HYK/loqGUBOYSamCcE5QABrLlwySDDZugtn/C6fMeYmLKGDtISYxeAtRIRPTCbUH
+oHRi/KrpqONc4h1MklUAUVEw1XcIYwQbKVLVHlD0yeSMqXNvYISwH6b0KhVshYt7
+r99qKcJjAluUSikatBocg4N1uyYT0y+MRfVBYMD+hdE1hk96otS9fqoJlCHj8bpx
+J4u139SNoZb+h7/LECwcZU0jTmmyXMXHlZbeIQpx70rZRmJgsE/pM1j+Et0VyClN
+OcnW4C0UX0Utrtls6E62+dC/nB05EBF714lkqBCxyf0eusdpl4kCJHj4Ri0dXJsH
+1oS5GeVd0ocee8CP3uXseYvICyAiWYhWNKT/shYMhBdkJrynJVXZFsqp88n5iYKl
+IMkRS165lfySWVmdazJJbjTL1GaKMxTK1uJkZXD7HQrk5oXMUrc8gPdF8toDc1Ws
+ISN1H2+5RvMp+gYvjBTcJ8QUiqbu9jMcu+pVC3itX4DXhUnA4D6T/E6xxC1vMUjl
+dFrhkPqmfXZRLYglsAeMXxBRTZiYdR8UOS/wTAdjsg/HIzDiYQnF/WKTUxpA2EdM
+1xVfgu0VJ78mEuacaE7UVauzoo6+7vT+zI9oc2sAbgZLJAM8y+gG1KQ4zhr+39wM
+yMZhvSt0nixFxx0bSgg5pWPRR8E+y4IJQA9H8Y4xh8J2L/j6ywTjIKauam67iy7b
+U/xB7z6A0x+OZZgAaMi+J4xGpZO4mHZ+TgoXn7hO3IDXz5p0FlPf7XLv993Y6B8s
+vL/NC7cHy20oX3wNoBEKBEjs1vwRhEa2YSZGWtpy9Fs5W/9NCNtIMiO+zGFduFqd
+GYc1qj0VB16Jc9bwoH7RnLDbUM8nRSjJOFW+6qLBrndL2aXElnM2OjVGjEItA71M
+ruF3qyZUmuzSK6D1D8l3NKWr+6DaTDco9tIi6sPs/wBz8XWQNc7hU/Z5fWir1KlQ
+8qLfNvbnJ/Hmuulg6bvxOo1BlIHK+o0ei0dIsHr7Pg2uzT9xuCnRxKhK61PA9iKr
+fjt8I75yPPe9sElPh1p1Zmi0rRBxQUh5yfjKyx3QyC55nhMbxxYKBOXop5z0Z/GT
+2RmQ/UlZjlgav3U4c5rQCnNSsCXzK3qU6S1nF0DuF5SztcRXUZhhNAQWDjjqk3Td
+Ymj7eUKH4Wtqhy8uioqR/eJkv92LUWK/vaYK4bZlnrPR+tvQ9/WKnWQDaKtlSWqV
+TW4eNOwcs2HQrpT9gNyrv+AvhYQsgC2uvLCZ8vcCKpRqgithPSoRtYdj53ku9JuQ
+KBWz+MZqVeFvnFCounMbGSBuCVv+8NZbqx1Oqksai4e7zGI5PFCLti8yoZg+Dix1
+KVjhb6PWV9/TBnzKR6NpuCjfc1H0bbUP3cTtXW630VCZeCOLTB4Gn+8zqoCWX6gC
+ORHfGh+jomlrp/28QwQv0Q1VFgizVQH5O5XwVNpIrXMns3a2Z0zTfAVgcFVD1e/Q
+d+UBe06IvL6G+vZ8iEzjnO6elOZiDDZ2/d0xtFkTEo+DCC96/XomPhawQYhLAf0l
+OKs6jfimKOHM2cHpMIi8g9QXiFdYwjQEOKX0LqNMvOPxntIrdcP+VMy9KMfClJU/
+h3EaBnLdMMrXGjwVIvskhx/MWvKp7/t3++P8yQbKsAHY2kfeUtNG455Mb5pCC4lQ
+Txpg9sIxRdpf6D2HreIcPpfBugrsNYfYXyaTYTw8FUiUgSfA5EfdNTdwwmDNlJmG
+f7fnNUxswKGtQmwru79JToRRg/Ag9lQax8M0xNNvHaIyEEHp4atZvk4O2RvVCYSU
+tj/nTSJJKcFIRhNkW3WOEqtitOHnWSyoxDtv+8oWHBdE/9TtRMOVfaXqM5EwPKad
+JBmc6+apUXvViQeZveGLBo2yc5pCeOrK/2lPt7Ehp32ocoYHVMy+9IpEx3AijRyA
++DOrfmWDWY9iAX3IgnciBwOzoYj53UFFBTXXB8tn9qq2AIjkAolIPty4xP+yN5ko
+Jc6xXrwzIhtyww/A2u4ucx/Mz8S3DU8Ww9bDcmvnGZlkIiUhTqZWeiNQgdbS8m2V
+4cNLPbZKSL9Ypl6kkCQ42i1k67P96OHTondoXZH0YfYJRUiSYtauAJuUtikG95tC
+UjATq8PzPyQmJtNNGhme1alw6iVAdDH6gRYSFRT7JmKXUgy2Eobhozm4nVd+X68B
+kt6wYZXts5mzO8rgowxHW5i3hE2q3M9KKDLW8NlH6NmBRD1d6/Wd7Z/yRY6Xgd54
+W2twY4H6NobxqzmJTGKjGabpHUlN8nkUROPngk028ZrDW6mhOPRhpkHlUPssg3Do
+qfUqocgke7QFEwIqrJwEs1rNTShdiQ3QGwZUPbQxFmcl+lVj8VdnfZgMtV0XMKmq
++lGBbsBsvdUd+snPMt4qGL2HyUs3WsaK+GQuiSVbf0wSSmO2kSI6VFDAkDWYHPI1
+8hPAF2UpdX8CYUfQ0PErkAlgHOLxmS1GeMtb+DAKvhCKCZwhTwJIDk8P7/FUQgrr
+xEvcUcaydKFPNE4tLBvV7Qr9xz4wB8L0tiQngZ2Am1Fnfbg4z/loAhAnblnNMseo
+AY6VVVOVb3Ut1VNy9Mtt3z99QI46w/olbj92JYDO9H5ApjyelsppW8k2RwY8qLiW
+iFzS6/DchjXuch73nrIUESquQkvLdufuO0QQKw6idrPig4vpWsbc0DTfSPZeplgl
+sMkIe4EK2qV+9evK79XLxAnDmC498O+fqkkQCcjI+KCK9baSecGWcUrgEh7X4D1I
+Cq2Ns6les9KYx+8s/kcqMcUREmVVtvYgbB21Xc1rKpbYxXj29lIr0VGtat/DJCDW
+WngN8Fk5DLZUzB7NzNvL9cIQasgcm+nT4/AOLccTKtvYaV+X0uBYLoMj1X42ezVJ
+W1u0rCxVchrpyuaN9D7gbKg3H+PDO56ezKXYlw6h/yrQvM0UvAwNeoFMN8f3iM2h
+oeMBH24nbPCZIljTgDvXko6OKLHQjqoBHA6bFVD9P8CwLU2zgRXCNehhSj4hfXct
+Afh9roCLxc2PpD1Sf59vWFDAY41Nm1JWyVdf2qc0+iglXfNgjcX72I1qS4B11Ksn
+Fyc02KEOpsWtP6aXf4HOHp9qSxgRPeHan9+5wwHlZjpjx5Vft/0GXfpsvOOxwtVT
+uRmp2arL0wx+WH7BN44T9a5wsVPZthukTjbBmo3sVbxWWlKfuR3N1K1nmmOI+WSm
+56S6DmLbVx5PanWA4ahwxCDDxfbaywEZcZDZc0Yjw1lsPaZLu4X2QbR2UOQIuSNb
+iKq3IDZcizTaKesEhguF2+eDGEqD41d/W3O549/3fDuG9aHdBQMczkxnnGlec7CK
+41folsr9sAe1SSPBEkzBM6RSNDa/qvMF+eFAVaV7vEhZ6GY3eCLa5W7SplhZEQk7
+dvfIBS2QOM/aiAacn4t9wyNOXcRFN+JXFxQNi5K1Kf8iT+ZObsShlM3mn7OhNqz/
+mRI2AY6UVeb2bIAERLRLOk8zbO5QJFaYHZ0WVUPtkmkTbrWdCOh1ngP1/eOEb4Hd
+jaJ7PzUxSYVTEHPVP4L9b8S9nie21235/tUwqoU1qhLksy8kB/6Fwt1XL9q1pqNA
+waTJAOVLwFnNK9fzcAhwYSj5BsdsnuphceXwtKgLLl60R1/NR02aBVj0sODguWPJ
+UtVGYfT9bxrckQXoJsRbm3lZZfsWdfjr5yS5Kb13Og4cZn2xUOG8AKLdiTCNbV61
+HUrt6NpkJs0z17G/O1rE3NalXTEVSqay3tUkw06k6s96XGqDKW2kceDl8Gu9au+s
+GQfUuqrybzUmucXEXp1I3WnQzgwlKbxf3rlOgEfipzuhRut1NxZ53vrfqxXVLunH
+9DNHjobqZOyhJsYuI4ZvNqGu4tbkpIcpMIBZWxJnk0ecYW6Wt+jyVVJlXtWiLxDS
+ToiloDZ1+pLOpKUCvhdlFfFmUA2vy33ElrYDqdYH8hev72dM9cX4RzHLOgmM8q24
+z4/n3X5Zr5qDmZpOMP8gTLtnY95Maa2y3Z7DRYjVdUp2gIk9VSQEnRfMJ+nnCYDt
+DKz9MWPX28jjfIR8hTeQb1WMdr+X2GCnZfa9gDYoMniSLBYKGS5S9Q1/d1DlWQd7
+NmaQNzVQYq/5Xl2gd4fp0z5ESc4Il2Xy0FGf1QW0lK7lQiEbcC7AwsmMdqJUjeQL
+Pot5cqrtjvOkSsc0y7y5lbad3UmYlVWh+m3k26xzWEQBtgtDX2k2KbD9OHaAD3TI
+08FryJAgcCJKqkn+qkjh6bQ9AIvzIqAi8p/lXTtN86eNjNXWCd7hsujLbp5OPaO5
+Py5LdPNjiNin7QXrwOCVCrtwJ49REFktQcb/vt9QakA13HfN8JI6gP1IgtOzB5Ht
+Z+uw81KGqM/MrE6wUJM4697Z/8q8T5lsovl46OzE8TD8CJWJGADL2bd6cCkz3fl0
+gCwZHfHY5c6nFXgCghmt0OwLATI7Ya9gD5ZHuuuj3nAlaxUsmNpnjyIvG6hsBxJ+
+owOIUoqqTxzsJN43ThXsxcAgZs4lUAjTUU/Sf9sR5onAV/DT+Jm+g9+j6cmUbIXS
+spdgWbhiQhRFNjnZZ/Yi7MkkoXrIo80T42TD5HylEvG9nBg2DfVPNUl3CYPFfGDQ
+hB8LKJQcU+kmZREpsmdmXzmMPTizbir0bCOj7s3XdfboUBNR9Ir+ocrTHgPf2z6P
+jVoMFLO6NCdeiWAfi7MafTHr+TR0Z/ja6Eaga292cURZcHalyF3n9oBlxWjSrP8X
+W/ZIONcE4BPpB8bkvWIPnc9mXDLxsYGfD5T2tedvHAkdodJJF7YcP/WyJL5TS8xs
+8fZerKjz6YL/+3dePpy8pukg4Y9vz5BiQTH+cZ6mkkHuhAqYR8vL/ihdbBZxMg/W
+LOs1/CRz8ZO2fAyBtcPDYkzeYCeP259IClWu8sPbijVqQ5BGOWCXZRArF3IxQFJG
+q1pz72Doam6wsXztUBsVTSdJ0joGaCV45CPUv9DqhjIgQHcmv80Nx/wIp0xkoank
+6tlBVaJ8MEdIBW9WAgLLYmPZGGj0eCFzHvar0kraUjBMbl/FGMrTMquX/mzTUA+q
+oqfq4Z/FEzQq1akAHgXeJn2CNxH6JbAiVvivoCb+iG/ntaYzuXVvGslOX6JMs+a1
+PFfva7kRcnWj/8e5XESMQIrrBZhv8Z299LDetpBjXmLASpsrWhzAzg5XTxIwazn1
+PFKh1iajvCBcKHtjr8dx/KaNZ+nYyBGN7p+TMHlh14A2hb4/DWAJw1CTjUymrR1X
+shlTNNSHqjgBhoFrssy5bX6U1x1y7lRPFwH1caLEWbIeL89bWdEq0y6/WeYa0op9
+/8Xc19Yu8plbQB4YEm4UaNEaJFfkC+2rlxb3v5ejPWQHchMc/LHaW8aaUHS5ajtR
+pc5ByhYkww5ZDPi+jq/UnANNTmb3R/5YzxYBoBNLY6AGncAc3jUIWJGDONbtZwkL
+wz1w+0ozuRAQ8svssAjXYFRrzA7UVs687kPu9Q95ebuwg/5Fz5i41dyqekzTqRSi

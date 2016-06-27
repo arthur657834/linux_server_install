@@ -1,88 +1,49 @@
-1.添加git用户，安装git权限管理软件gitolite
-useradd git
-echo git | passwd --stdin git
-su git
-cd
-git clone https://github.com/sitaramc/gitolite.git
-mkdir -p $HOME/bin
-gitolite/install -to $HOME/bin
-
-2.添加git管理员
-在管理员机器端生成密钥
-linux为例：
-ssh-keygen -t rsa(一路回车)
-
-将密钥拷贝到git服务器
-scp root@192.168.100.3:/root/.ssh/id_rsa.pub /home/git
-
-bin/gitolite setup -pk id_rsa.pub
-命令执行成功之后就生成git管理库(gitolite-admin)和git本地仓库(repositories)
-
-3.客户端导出管理库
-git clone git@192.168.16.203:gitolite-admin
-
-4.新建项目及添加用户
-将添加用的密钥下载到gitolite-admin/keydir
-修改gitolite-admin/gitolite.conf,添加项目,用户
-例：
-repo project            #新建项目的名称
-    RW+     =   lj      #读写权限的用户,多用户以空格分割,此处添加的用户名应与密钥一致(例：密钥test.pub,用户test)
-    R       =   3       #读权限的用户
-
-提交修改到git管理库,调教成功之后会在repositories下出现project的git库
-
-5.安装gitweb
-yum -y install httpd gitweb python-setuptools
-修改/etc/gitweb.conf
-#our $projectroot = "/var/lib/git"; => $projectroot = "/home/git/repositories";
-chmod 705 /home/git
-
-编写git.sh
-#!/bin/bash
-while :
-do
-chmod 777 -R /home/git/repositories/
-sleep 1
-done
-
-编写daemon-git.sh
-#!/bin/bash
-x=`ps aux | grep git.sh | grep -v grep`
-if [ "x" ]
-then
-nohup sh /root/git.sh &
-fi
-
-将daemon-git.sh加入crontab,1分钟执行一次
-*/1 * * * * sh /root/daemon-git.sh
-将daemon-git.sh加入开机启动
-echo "sh /root/daemon-git.sh" >>/etc/rc.local
-
-service httpd start
-这样就能通过浏览器访问git仓库(http://192.168.16.203/git)
-
-注:添加shell执行的原因为每次git代码提交之后,项目仓库的权限会被修改导致gitweb无法访问
-
-配置文件范例：
-repo foo
-    RW+                     =   alice
-    -   master              =   bob
-    -   refs/tags/v[0-9]    =   bob
-    RW                      =   bob
-    RW  refs/tags/v[0-9]    =   carol
-    R                       =   dave
-	
-	@staff      =   alice bob carol
-@interns    =   ashok
-
-repo secret
-    RW      =   @staff
-
-repo foss
-    RW+     =   @staff
-    RW      =   @interns
-	
-@all-devs   =   @staff @interns
-
-git服务器账号密码管理：
-gitblit
+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

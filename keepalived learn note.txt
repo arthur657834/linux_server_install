@@ -1,27 +1,20 @@
-http://my.oschina.net/luciamoore/blog/607034
-
-yum -y install keepalived
-
-vi /etc/keepalived/keepalived.conf
-global_defs {  
-    router_id NodeA  
-}  
-vrrp_instance VI_1 {  
-    state MASTER    #设置为主服务器  
-    interface eth0  #监测网络接口  
-    virtual_router_id 51  #主、备必须一样  
-    priority 100   #(主、备机取不同的优先级，主机值较大，备份机值较小,值越大优先级越高)  
-    advert_int 1   #VRRP Multicast广播周期秒数  
-    authentication {  
-    auth_type PASS  #VRRP认证方式，主备必须一致  
-    auth_pass 1111   #(密码)  
-}  
-virtual_ipaddress {  
-    10.1.51.157/24  #VRRP HA虚拟地址  
-}  
-
-/etc/init.d/keepalived start<=>keepalived -D -f /etc/keepalived/keepalived.conf
-
-ip addr 查看地址是否已经绑定到eth0上
-
-启动成功之后10.1.51.157这个地址应该能ping通的
+U2FsdGVkX1/GT0CGN9C/mEkDxbsZqvb5cynXOf0dB4aH/h9kcmkMWtX96hEocNJc
+OjoLVEeW0Fp2whUAaS9L6YdesTnMsb3mYP658WkGER4KTeixOXZl4Y6rhgVRb/Ts
+XcajogdzkHzCSAmPAXM/kEOabx70wunoZG3Z146xaV7uLWH9Z9FFKQMdvqrGVVcV
+/PZQyD5KvlBp5fM8Ikq3wPZY+QJ5vMCsjt9+OlyzVaoyWLcU4WucUN4Jbt36htXU
+8wC54Kq6z4sJrwvcJxi9ggUQwm92DktawNuGoQYYZyXudyjqKR5zzEBo0zutlOal
+W6b4pQ/+IP0Clm9lvfkN4ynGvabqgrsL2sldzDnNWgbfiGspD6Y6GwvTs/ggaq+3
+FK1oyR89KvPwC9Lz+rcrsSUIurJPP9t8lxCGv5/PNJh8xzWtwFliZNDNvc/zxMaY
+1rRY8tcPACoY1g3ewMdhT4y8lEkTp2Ztum+2N/yEfCClX3zLKnUxxqzAYSAkQzfK
+pzmkSrCiKzDO2LP9LClMt17/br22EnUT0sMkVyjBz73xJP9ihpZAiWevNSi85iOR
+qEVxpLD8BUk15u//12mtggJi1VGGNg9T9RHJJBeXRjJnmQJ2eT2pv9J+l1jUwPNR
+HnXT3X9NkrbosormrzwHoUbEfy8wrqnqMHtKe2PFCYcjmZT/R6JzRGDJNr7XhVve
+m1Hhk0yqzG5aIDmoqRyDwIa4UxfDpA70zx0rz7yyZEvRqGSx4UTIUnn7DLvXmQHB
+qJ5kfx7k72Nx2m19QxA1aHTjwkSfMvzY5QXrFjzVsChkWdn9kk4af5xF6n0SJEN/
+z/wS80pfPPgFnq+AdvN7tmcXCRq/NlAZ99izQUQwObaKEGmPuTqhOJgTj6+AObSG
+op8D1usVgbViG1z9aAao6sO42u93l4d+xkOM2Aiwx5pojCkgL3z7O46MnwrxOwAb
+GA+zaVnwqLMx0dP1LAmck2K5ytYul2EIT6DHyfL4OXtt7O9EyAW2wY6/m7a1HrN4
+Ap8ujmCOxvCaQYF92WceI2jy4wpwtI03UT5y23Jy8xFasw04pf7OKh+U1aGMR8/k
+oPB/ru03LL9m276JusAMpkoFbJ/YtBo7IsPNNDSty5532QyFjNwgNQieSx3KlNGY
+gt9ZVc1c07jXcMnR2dX5o+u1Xzfh1qKZGeKg+p6tSiYojfhgRCjQJhWjF04FWsdQ
+8v/vZB8YvLQ=

@@ -1,33 +1,36 @@
-server:
-yum -y install nfs-utils rpcbind
-vi /etc/exports
-
-/data 192.168.0.0/24(rw,sync,no_all_squash)
-<输出目录> [客户端1 选项（访问权限,用户映射,其他）] [客户端2 选项（访问权限,用户映射,其他）]
-
-参数说明：
-rw：read-write，可读写；
-ro：read-only，只读；
-sync：同步写入（文件同时写入硬盘和内存），适用在通信比较频繁且实时性比较高的场合
-async：异步写入（文件先写入内存，稍候再写入硬盘），性能较好（速度快），适合超大或者超多文件的写入，但有数据丢失的风险，比如突然断电等情况；
-注意：除非特別有需要，否则不建议使用 async。如果沒有指定 sync 或 async，NFS 服务器在启动的时候会印出警告信息。
-no_root_squash：NFS客户端连接服务端时如果使用的是 root 的话，那么对服务端分享的目录也使用 root 权限。不安全！
-root_squash：把客户端 root 身份的 UID/GID (0/0) 对应到服务端的 nobody 用户去，即服务端使用 nobody 用户来操作共享目录；
-all_squash：不论NFS客户端连接服务端时使用什么用户，对服务端分享的目录来说都是拥有匿名用户权限；
-anonuid：匿名用户的UID值，通常是nobody或nfsnobody，可以在此处自行设定；
-anongid：匿名用户的GID值。
-
-修改/etc/sysconfig/nfs，去掉以下两行的注释
-#  RPCNFSDARGS="-N 2 -N 3" 
-#  RPCNFSDARGS="-N 4" 
-
-启动服务，注意先后顺序：先rpcbind ，后nfs
-service rpcbind restart
-service nfs restart
-
-client:
-yum -y install nfs-utils rpcbind
-rpc.mountd
-showmount -e 192.168.0.29
-
-mount -t nfs 192.168.0.29:/data /mnt/ -o nolock
+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

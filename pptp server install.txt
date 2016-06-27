@@ -1,14 +1,9 @@
-yum -y install ppp pptpd
-
-vi /etc/ppp/options.pptpd
-
-添加
-ms-dns 8.8.8.8  #添加主DNS服务器地址
-ms-dns 8.8.4.4  #添加备DNS服务器地址
-
-具体配置再看，refuse-开头的配置可能要修改
-vi /etc/ppp/chap-secrets  
-
-添加帐号密码
-# client        server  secret                  IP addresses
-osyunweivpnuser01       pptpd   123456                  *
+U2FsdGVkX1+wSghmC4JMdQdZ+KPgerEMFx/pbu/WITMntYjK4g8sc2nkwb3rk1Sa
+kyGvw+FHzo0VwhUqv2AtD+tXYrTREDdrvzTnI5wjii6dxZszCaQlk5D0ddt9Auow
+BcNRMprafV9mQvD7iNO25nvyASZi1VonrJR7THA0F4ExtSqJcKJKruuFVPa/48yy
+CWhb3rJaXF8yt3d1nY3Ic8tFuOYpIFSfhSj14GnQEMadpjxF+W17zqb2PBvGrMc2
+xyT7Wzad77L1c0J/6hw4AvxhS8sntxtVH8lK3Vx6TNhf4298SEle2Gcm64yYKrDj
+ROylqN8x8Qzt2BUSNnkaAKzauMQMKttC4kGCFHZT27PibXInHeYIcXws7Dw/rkmV
+hkr0yrR2mLSkyLcCtBYn19p60/mvgZT+QJ0zBWfqeCkgkUBBgEBjG8APJGtQaodJ
+X4s528kfBoYDN1YE4tIGUJ3K7t0W55FoIGHBp9wzkZne97/4zwb6X4va37Kum7D6
+pu0ZD3pTJweij8NlZtNWlv2SRKG+ruPx

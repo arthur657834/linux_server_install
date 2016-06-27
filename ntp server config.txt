@@ -1,25 +1,13 @@
-yum -y install ntp
-
-vi /etc/ntp.conf
-
-修改restrict default kod nomodify notrap nopeer noquery
-为restrict default nomodify
-
-注：也可修改ntp server，也可以不该
-server 0.asia.pool.ntp.org 
-server 2.asia.pool.ntp.org
-
-添加配置，否则会出现Server dropped: Strata too high的错误
-server 127.127.1.0 fudge
-127.127.1.0 stratum 8
-
-客户端需要等一段时间之后在运行ntpdate，否则会出现
- no server suitable for synchronization found
- 
- 
-ntpdate 调试命令
-
-服务端：watch ntpq -p
-
-客户端:ntpdate -d server-ip
-
+U2FsdGVkX19vdr/P9E3tx6goVIITCs8ns439A6wrztOr3ro9zSM0ZUwBvaPtK/5E
+jcbX40hc+P5jpX/BOZ3M8e+zpy/1nEZ4oKbrd3S2/FGP4bURUMaDTQghx2kcJB1Y
+FWToJdleeg3RqOoNDfAH2wkSr57TJXsjsnhtP+I3PXCZFYL7YKqHk7mLRBRPDiFq
+5qmAk5moY2UZjycB3vFHDC2fnt+8WtjDoQYsLzvq1jHXSviMFcGxGe1CtIWSbGTp
+vPHvYmuxlDMQVzUmiiXeBn+TOY5dYDtbbWxEWhR1hitfc664Sw39LYW0dAO2Qnwy
+cJWe4nww4PwXEY4vhYJnU57h2pcwCMLrd3ybGmzNiUjR/gr2r7VecGkRM95a3xNT
+ru+xQnNNsQZEhF1dU27c0m+8LDzqEXvouUZyoMaCaS2o4n9b7FN8/oPN2NsiWboE
+6qe70DYNVdPX7qH12C0U6kPSNHDdWOmVBY6oBxup02DMVr5ETXBN2l/Tx33F6Efb
+68PrCtRC3+ZqmIXk4aHfKcPEwTX5ptP8XWGlk8eEIPSfnugoju7BpLV5PYgwRQzW
+qyC6aYKG5BlvsgYxaTLwoMHycQfitMLBPdhSwnl+lbAM4IV43l+ttFL6iu0uuKZB
+U2gyZ5pjdFrtfp7ScXJ6lloIKvRsACFu5uYCi9nMyjSWH0+zLc7hbNe0fK5w9xyj
+clXzbjmcu/RGEWKAOj3yKBbA7pglzFwjeyyBJjj35W2ayovhEyIOw5tACdM4R4ry
+JaAP+aiVguSaOXtrDrjCVA==

@@ -1,54 +1,28 @@
-https://www.nginx.com/resources/wiki/modules/echo/
-
-wget http://nginx.org/download/nginx-1.9.12.tar.gz
-tar zxvf nginx-1.9.12.tar.gz 
-git clone https://github.com/openresty/echo-nginx-module.git
-
-yum -y install pcre-devel
-cd nginx-1.9.12
-./configure --add-module=/root/echo-nginx-module --with-openssl=/usr/lib64/openssl
-make
-make install
-
-vi /usr/local/nginx/conf/nginx.conf
-location / 中添加
-
-if ($host != '192.168.1.250' ) {
-echo_before_body hello;
-echo "not equal 250";
-echo $host;
-echo_sleep 2;
-echo_after_body igor;
-#       return 403;
-}
-
-
-echo_foreach_split '&' $query_string;    # 将查询字符串以&分割 
-
-# subrequests in parallel 
-echo_location_async /sub1;
-echo_location_async /sub2;        # 发送子请求到$echo_it对应的location
-
-# subrequests in series (chained by CPS)
-echo_location /sub1;
-echo_location /sub2;
-
-echo -n "hello, ";
-echo_reset_timer;
-echo "$echo_timer_elapsed";
-echo_flush; # ensure the client can see previous output immediately
-echo_duplicate 3 " END ";
-echo_after_body igor;
-
-echo_read_request_body;
-echo_request_body;
-
-echo_subrequest_async POST '/sub' -q 'foo=Foo' -b 'hi';
-echo_subrequest_async PUT '/sub' -q 'bar=Bar' -b 'hello';
-	  
-
-ps aux | grep nginx | awk '{print $2}' | xargs kill -9;/usr/local/nginx/sbin/nginx
-
-
-
-
+U2FsdGVkX1/1ENucCwuXHXY34BfroWMs9GRuegv9btPto7InEQr+vKP+LjWHVii4
+802jFx/4FxX7ZaxtUu+8EP1tI9lgWkS0tZahWbPcP5cC/0O5Ij3i5vH4oZsYf7zq
+/aBSISqFlghbxe3vHptvWPGdjBFWWYUWxLjJtazMc7cIhWho6VZvdO3qPBectJuc
+J4P8LXK93kkrBasBQrmdV7ChRmOFtsUHcnuwsNuMqAmkuQ9dPXsIlhBAJ5TJ4SqR
+RoUzOA9w00LCylh7CkYp+iQSqZBQr+tKO+FA5hUBaKryocFXLicvBxXiNmSW7dCI
+4n4yw63TwTbwKwH8X8SyX/Uw8g5A0Ntm+bHy6x20t+CmP2ykkOisNYD6KiREsEaJ
+i31i05Nse8viOwaSjkqvfTrGq11E8NxdTGy9EYTjm+uNR4+rhtYBc/zErVxiMKu4
+aLxBUnfB+LgtZwxCb17Ada79PAnghLDSSRSzxZlrEsW8Q8GMsamYYpPxzwAST7Kl
+m/71cYi1+jjjD4AAS0ZKrH6Yv6jT6s6cgvYXkHT1oNxXgoOL+0dgnqoOWGjCfvdj
+zZfWKYtkNYlBJWUJ22NXN5odeBnZyzFUNEgsrdjly3K9Yezf4feSBSzT+TtRrXcg
+h/jqCk24IDGzhKvNFAUuIK5uMfC/dPBjZyBBYIo+eh6mjcazbEHw7Qp3EZJjGJk3
+9MNNKhFwRflWiZPe0YklBiaGjsDuKd56Zmtc5J7hKkpT6QwJVP0a+XaSdJX5IEPV
+VXvOzJoeLGTBdyVPzs4tdkOI17zzxpilFvn+AmgNxKbWK/5+Vpnc8QmMWU9vScj7
+FHzgkOfovWPqPXTxzlUD3/kORQydZ04K+6jjyzeA6br3wIOszpxZQHTM7hj4NtJc
+ZnMW3DVXEZ0T4yd31yNe8zXxvDlgT61XJSswzkHxWEBcwyiXPFki3siVYNeUMg1C
+QGNt3S7TFG73WWBM3HSTtmLbCD3TNBePnVT9z5Zv8SC9NxEwAO/soy1nLHqD98+L
+Gd45OYcpzaIgm4Z13xTFRV/tMjagAzgx6ltgLvpfY4lvW4QD6P9ivCeJD2tBAE6A
+CKBzCTejMhJQvAxV7+OdmJFh48xPpktfuU53nx99rjUFIrBHKQ1MUPNsJuxZdtjJ
+/PuMKJYSIQJMSILwwBrSxd/UrpuoKmlaHx+Bw5w13FGgrAJTU1dlCADxsNxnhfWg
+BwYmB6tndlDyuFkpkViUnlT5tJQO8IypXtgShUHF2v0XwWXRRsQnXHr6kplF98Qa
+5bY/uQffU0dw01jZOpAuYdd2/x13XFKMqzHA7TYn2cSl94a6X6dWzKpKAiQnanXY
+jQBjiPUSSXaNwI9zrDCC3/8I/6PZKR0FGRP7bk/dz6eRZIStQ+9dnV7vwHSr/ign
+l0K5BUy8DOqx4+tLVOFxnaLcuqmbQoBieIdVidmO4gCcBnm5kod/498c4zcItwkc
+W3m4dFRwJP05mRsI6w1hADApqvACpT5HbBfzNfwl+3SoeLeD0pkDVuJInN5n3Fpb
+uhVPRJI71HuPcgeOsk3iVukmeozcmk182Y25mqptol18f9MQTNToXNnY9cYo2Zla
+ajv4q1+jIPDGeiCR6U5lSeqFR3os260CgqYwEaipPXOhU72Fd3VSOHeTCp64QNO6
+OJ/sFL64AIPvDhgS2i84FEB0X6l7l8Fm6AYzFrvHNmZ0JIFEO8vw1SP7zk24quyr
+K7FCOzvWdgZKmjhPSXBKMwCnOr9G/mjjVYmzOPlvx5XRWOBsXK1TKCc1R/iW3Vi5

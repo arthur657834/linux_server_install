@@ -1,28 +1,19 @@
-yum -y install httpd php mysql mysql-server php-mysql php-gd php-imap php-ldap php-mbstring php-odbc php-pear php-xml php-xmlrpc
-yum install epel-release -y
-yum install phpmyadmin -y
-
-vi /etc/httpd/conf.d/phpmyadmin.conf
-注释掉<Directory “/usr/share/phpmyadmin”>…</Directory>这一节，这样做可以使phpmyadmin不限于本地打开
-
-echo 'ServerName localhost:80' >>/etc/httpd/conf/httpd.conf
-
-<?php
-phpinfo();
-?>
-
-service httpd start
-/etc/init.d/mysqld start
-mysql_secure_installation
-mysql -uroot -p123456
-GRANT ALL PRIVILEGES ON *.* TO root@"%" IDENTIFIED BY "123456789";
-CREATE DATABASE `wordpress` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-flush privileges;
-
-tar zxvf wordpress-4.4.2.tar.gz
-mv wordpress /var/www/html/
-cd /var/www/html/wordpress
-cp wp-config-sample.php wp-config.php 
-vi wp-config.php
-修改数据配置信息
-
+U2FsdGVkX1+0RgLEvaVzrz1FCSWb3sGIsN5Ai98bHEKXWkJNw1fLV6Q7787WTPhU
+w17dVv4HSApHmXvlJadSO/YqtywSgL3E60yglZqqpO+2g5ARpPpX0C2L5Q0JSI71
+BIlCaa8fnG/PlydfmYmRzq1qzp0JEXO8vk1qcf2hg+L+Wcub+XFETxy6H8HnFNM7
+E5j7hMX1FpqJYtlDpuWZ7JAqj003WjKJO2PXX5YNt88wwN66iTLlDK9US53s0xst
+9nmxzcAdw/v8aCB0TYCvapTeZN//hKoNL7KC1xCNzSsaDXqhlIxGN4HrIIeEpax0
+GZQpVPmps6vwyO0Xb38ac6vQU0BDwahRBSWALKy9863FzCWGhAWXQ7M+fHYdSu2r
+Sh1TwR97oLFV4/h9jBDWQSlK7WkM+Y5KQ7g1r8Laf/HgBlEHL3Bbx51SfTFTpJd0
+ol08l2TQwW1SxcdHhgJBVv717pgBSVfXJiCa6HGcr8iDUMQ8WT4057pbnh4pR/W1
+RzDIFsqykFMUYHSQjOqUGYXTKrMaVimOp4X5Mo23Q17G+O3yul+2h2RCijXwWFO6
+Y7cK4xBJSIfFPEnZk9vXDJXmuT4H5pllrsE7bRET5dzyeU6ApL62sRxs4V/TfAwU
+KpstfzkqmNshI6eWuAJ/fU2t89V1s7bZ5iGuVuJX/xQpEZFV/RGKnZJ27wagrbT6
+70ZcZfexBySqyZkd9N6lXngAN5cglLIR76O0QUEmLcE8m28tOO1Jr0mCYF+nSOi+
+IOGkPLch2ELmgtSNLyXwZxlRAk5zV4Ch6JOiWo+wER3juX8vmnr89IGVz5lEoMU6
+z8EP6GQHAk9VxdSi9ziVRQUYTrNy2pBEPpGKIttZPvo/tk0al7jVb/J8TOQ7gGfP
+LWSBTuA8lwe9nz5o/4ycBVbwbI2DHDZYUZle65Eua0CDR1AmDITR1WIHCP87249U
+H1ALc0n5Jw+3dF2PlAT8EOrTYAPlthl0sGDC+DhBqHCslJOf+/Ac4VeHIw9yO5Hy
+en5uh6ZlF2RMQPlHD6qdUcIIupBn7yXRnanFgo3XSjLJPOiXoT/gtRRe9M3Wu4d4
+KsxOqk9LomwIRMFFt6EaCV1/wLEUOPkbgu8os0oqL3ZbFYIJxsgCJArThHdPO1LF
+LPbGMjxt+5DEMVV3fRXvdI6IV6j/FkRAHu8NMAIbvlaNjZzf45LdfA==

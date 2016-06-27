@@ -1,125 +1,81 @@
-yum -y install httpd httpd-devel mysql mysql-server mysql-devel php php-devel php-mysql php-common php-gd php-mbstring php-mcrypt php-xml php-ldap php-pear
-yum install -y freeradius freeradius-mysql freeradius-utils
-pear install DB 
-pear channel-update pear.php.net  
-pear upgrade-all 
-
-service httpd start
-service mysqld start
-chkconfig httpd on
-chkconfig mysqld on 
-mysqladmin -u root password '123456'
-
-测试：
-去掉#注释
-vi /etc/raddb/users
-#steve  Cleartext-Password := "testing"  
-#       Service-Type = Framed-User,  
-#       Framed-Protocol = PPP,  
-#       Framed-IP-Address = 172.16.3.33,  
-#       Framed-IP-Netmask = 255.255.255.0,  
-#       Framed-Routing = Broadcast-Listen,  
-#       Framed-Filter-Id = "std.ppp",  
-#       Framed-MTU = 1500,  
-#       Framed-Compression = Van-Jacobsen-TCP-IP
-
-radiusd -X
-
-radtest yerunian test localhost 1812 testing123
-
-killall -9 radiusd
-chkconfig  radiusd on
-service radiusd start
-测试结束
-
-cp /etc/raddb/clients.conf /etc/raddb/clients.conf.bak
-grep -v \# /etc/raddb/clients.conf.bak >/etc/raddb/clients.conf 
-vi /etc/raddb/clients.conf
-#将来你的真正的raidus计费客户端如routeros等需要在这里配置ip信息,例如  
-client x.x.x.x{  #这里的x.x.x.x就是你的routeros服务器内网口ip  
-   ipaddr=x.x.x.x #routeros内网ip  
-   secret=xxxxxxxxxx    #你自己定义的密码  
-   shortname=ros  
-}
-
-cp /etc/raddb/sql/mysql/admin.sql /etc/raddb/sql/mysql/admin.sql.bak
-grep -v ^# /etc/raddb/sql/mysql/admin.sql.bak > /etc/raddb/sql/mysql/admin.sql
-vi /etc/raddb/sql/mysql/admin.sql
-
-create database radius;
-use radius;
-CREATE USER 'radius'@'localhost';
-SET PASSWORD FOR 'radius'@'localhost' = PASSWORD('radpass');
-GRANT SELECT ON radius.* TO 'radius'@'localhost';
-GRANT ALL on radius.radacct TO 'radius'@'localhost';
-GRANT ALL on radius.radpostauth TO 'radius'@'localhost';
-flush privileges;
-
-mysql -uroot -p123456 < /etc/raddb/sql/mysql/admin.sql
-mysql -uroot -p123456 radius < /etc/raddb/sql/mysql/schema.sql
-mysql -uroot -p123456 radius < /etc/raddb/sql/mysql/nas.sql
-mysql -uroot -p123456 radius < /etc/raddb/sql/mysql/ippool.sql
-
-vi /etc/raddb/radiusd.conf
-去掉以下两行的注释
-$INCLUDE sql.conf 
-$INCLUDE sql/mysql/counter.conf 
-
-vi /etc/raddb/sql.conf
-去掉以下1行的注释
-readclients = yes
-
-vi /etc/raddb/sites-enabled/default
-authorize,accounting,session
-去掉以下行的注释
-#sql
-
-测试
-mysql -uroot -p123456 radius -e "INSERT INTO radcheck (UserName, Attribute, Value) VALUES ('user1', 'Password','password1');"
-service radiusd restart
-radtest user1 password1 localhost 1812 testing123
-测试结束
-
-安装ui
-http://sourceforge.net/projects/daloradius/files/latest/download
-tar zxvf daloradius-0.9-9.tar.gz
-cp  -R daloradius-0.9-9 /var/www
-cd /var/www
-mv daloradius-0.9-9 daloradius
-mysql -uroot -p123456 radius < /var/www/daloradius/contrib/db/mysql-daloradius.sql
-mysql -uroot -p123456 radius < /var/www/daloradius/contrib/db/fr2-mysql-daloradius-and-freeradius.sql
-
-	If this is the case then you have 2 options:
-		A. If you are working with FreeRADIUS 1.X then:
-				mysql -u root -p radius < fr1-mysql-daloradius-and-freeradius.sql
-		B. If you are working with FreeRADIUS 2.X then:
-				mysql -u root -p radius < fr2-mysql-daloradius-and-freeradius.sql
-				
-vi /var/www/daloradius/library/daloradius.conf.php
-$configValues['CONFIG_DB_USER'] = 'radius';  
-$configValues['CONFIG_DB_PASS'] = 'radpass'; 
-
-vi /etc/httpd/conf/httpd.conf
-
-最后增加以下内容
-Alias /myradius "/var/www/daloradius/"  
-<Directory /var/www/daloradius/>  
-  Options None  
-  order deny,allow  
-  allow from all  
-</Directory>
-
-service httpd restart
-
-http://192.168.1.10/myradius/login.php
-administrator/radius
- 
-
-http://peihexian.iteye.com/blog/2087206
-CentOS PPTP配置FreeRADIUS+DaloRADIUS实现高级用户控制+流量控制
-http://www.xj123.info/2323.html
-
-
-
-
-
+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

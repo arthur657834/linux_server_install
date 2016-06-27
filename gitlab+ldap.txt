@@ -1,136 +1,82 @@
-基础环境安装：
-	yum -y update
-	yum -y install git ftp wget lrzsz net-tools
-	yum -y groupinstall 'Development Tools'
-
-安装jdk环境:
-	rpm -ivh jdk-7u79-linux-x64.rpm
-	echo export JAVA_HOME=/usr/java/jdk1.7.0_79 >>/etc/profile;
-	echo export PATH=\$JAVA_HOME/bin:\$PATH >>/etc/profile;
-	echo export CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar:\$JAVA_HOME/jre/lib/rt.jar >>/etc/profile;
-	source /etc/profile;
-
-关闭防火墙:
-systemctl stop firewalld.service
-
-gitlab安装：
-	方法1：
-	curl http://packages.gitlab.cc/install/gitlab-ce/script.rpm.sh | bash
-	yum -y install gitlab-ce
-	方法2：
-	下载rpm包:http://mirror.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7
-	rpm -ivh gitlab-ce-8.3.2-ce.0.el7.x86_64.rpm
-	gitlab-ctl reconfigure
-
-gitlab使用:
-	浏览器打开:http://IP
-	Username: root 
-	Password: 5iveL!fe
-
-gitlab https配置：
-openssl genrsa -des3 -out mesos-slave.key 1024
-openssl req -new -key mesos-slave.key -out mesos-slave.csr
-
-cp mesos-slave.key mesos-slave.key.org
-openssl rsa -in mesos-slave.key.org -out mesos-slave.key
-  
-openssl x509 -req -days 365 -in mesos-slave.csr -signkey mesos-slave.key -out mesos-slave.crt
-
-openssl genrsa -out mesos-slave.pem 2048
-openssl req -new -x509 -key mesos-slave.pem -out mesos-slave.pem -days=3655
- 
- 
-mkdir -p /etc/gitlab/ssl
-chmod 700 /etc/gitlab/ssl
-cp mesos-slave.key mesos-slave.crt /etc/gitlab/ssl/
-
-gitlab-ctl reconfigure
-
-gitlab https配置：
-
-openssl genrsa -aes256 -out mesos-slave.key 8192
-openssl req -new -sha256 -key mesos-slave.key -out mesos-slave.csr
-
-cp mesos-slave.key mesos-slave.key.org
-openssl rsa -in mesos-slave.key.org -out mesos-slave.key
-  
-openssl x509 -sha256 -req -days 365 -in mesos-slave.csr -signkey mesos-slave.key -out mesos-slave.crt
-
-openssl genrsa -out mesos-slave.pem 2048
-openssl req -sha256 -new -x509 -key mesos-slave.pem -out mesos-slave.pem -days 3655
- 
- 
-mkdir -p /etc/gitlab/ssl
-chmod 700 /etc/gitlab/ssl
-cp mesos-slave.key mesos-slave.crt /etc/gitlab/ssl/
-
-gitlab-ctl reconfigure
-
-Peer's certificate issuer has been marked as not trusted by the user:
-git config --global http.sslVerify false   not work
-git config --system http.sslVerify false   work
-
-这时cleint 克隆报错，不知道怎么解决
-clinet：
-	办法1:git config --global http.sslVerify false  
-	办法2:export GIT_SSL_NO_VERIFY=1
-	办法3：
-	[http]
-    sslCAInfo=/path/to/your/certificate/file.pem 
-	
-	或者
-	git config --system http.sslCAPath /path/to/cacerts
-
-
-git记住帐号密码配置：
-[credential]
-  helper = store
-
-ldap：
-	vi /etc/gitlab/gitlab.rb
-	
-	ex1: ladp配置
-	gitlab_rails['ldap_enabled'] = true
-	gitlab_rails['ldap_servers'] = YAML.load <<-'EOS' # remember to close this block with 'EOS' below
-	main: # 'main' is the GitLab 'provider ID' of this LDAP server
-    label: 'LDAP'
-    host: '10.1.x.x'
-    port: 389
-    uid: 'uid'
-    method: 'plain' # "tls" or "ssl" or "plain"
-    bind_dn: 'uid=ldapaccessor,ou=People,dc=xxx,dc=com'
-    password: 'xxxxxxx'
-    active_directory: true
-    allow_username_or_email_login: true
-    #block_auto_created_users: false
-    base: 'ou=People,dc=xxx,dc=com'
-    user_filter: ''
-    ## EE only
-    group_base: ''
-    admin_group: ''
-    sync_ssh_keys: false
-	EOS
-
-	ex2:邮箱配置
-	gitlab_rails['smtp_enable'] = true
-	gitlab_rails['smtp_address'] = "10.1.x.x"
-	gitlab_rails['smtp_port'] = 25
-	gitlab_rails['smtp_user_name'] = "git@xxx.cn"
-	gitlab_rails['smtp_password'] = "xxxxx"
-	gitlab_rails['smtp_domain'] = "mail.xxxx.com"
-	gitlab_rails['smtp_authentication'] = "plain"
-	gitlab_rails['smtp_enable_starttls_auto'] = false
-	gitlab_rails['gitlab_email_reply_to'] ="git@xxx.cn"
-	gitlab_rails['gitlab_email_from'] ="git@xxx.cn"
-
-log:/var/log/gitlab/gitlab-rails/production.log
-
-
-
-	
-
-
-	
-
-	
-	
+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
+am57WLA/MDE5+H6G9gXV/Q==

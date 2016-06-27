@@ -1,39 +1,15 @@
-yum -y install openswan xl2tpd ppp lsof
-
-mkdir /var/run/xl2tpd/
-echo 0 > /proc/sys/net/ipv4/conf/default/accept_redirects
-echo 0 > /proc/sys/net/ipv4/conf/default/send_redirects
-
-vim /etc/xl2tpd/xl2tpd.conf 
-
-[global]
-ipsec saref = yes
-
-[lns default]
-ip range = 10.82.88.2-10.82.88.254
-local ip = 10.82.88.1
-refuse chap = yes
-refuse pap = yes
-require authentication = yes
-ppp debug = yes
-pppoptfile = /etc/ppp/options.xl2tpd
-length bit = yes 
-
-vim /etc/ppp/options.xl2tpd
-
-require-mschap-v2
-ms-dns 8.8.8.8
-ms-dns 8.8.4.4
-asyncmap 0
-auth
-crtscts
-lock
-hide-password
-modem
-debug
-name l2tpd
-proxyarp
-lcp-echo-interval 30
-lcp-echo-failure 4 
-
-xl2tpd -D 启动
+U2FsdGVkX1/ywwm0fSUhKepayYa69jyRuyBesHU2sEE4kW78NxlzlVYahzqQY8Tj
+PkVlcZZHnS5+HERkc8KbpbiPgG0eulGx9UeiSsW77/on6r2e/8OaFConIZ6tQdN7
+qDRGvyr16K64axiPodmtQsiCn8D66ppg62tkS0zV0FK0WAfivaZJHGB92lLYslGe
+xPcZ87NcYv/oX44UWiox/h56k1TPOFBUAxs5QYnc46ulQBg0Hu+TtoCnvkJPFJFe
+fxaF20JATzKd6BBpsk/aWL0FKSiQKl2n62HRlieg4nz5lWiQpGjsyvqW4Q5ee63c
+p2YMWPoc7Db7Wk12dj2qQTS4rNZlY8sSa2GlzlDhRtdNINhw6mdKTEqaNZyiUI+y
+rvYrosrfA1dpvcKX6Uce2YIMESE+Qx4HvyW0jzz+GfiOvrv2XgYQbheT8Jtqb+03
+T+31xV5AKj2Mj3DlRnnoVA37dONDJgjOv0iwNyd8x3Izxe2c0GpYHK0RHT/b2iOe
+EQItN/MdB0Mg3Vwk6hqYFSaDeP6VvNfQ4yRLh2atLcZvuAOCQV0OZbIvog1SGF8J
+FPgdlwC4qNNsoXNlLpET84AExteaqILyZF2AfgNU7eLRXUT3shMgSxGVX9nbAIDa
+yBNK8wWs8c2R1v2dPyvW0Y0st0XRj3Am0bXLmPeBDADBXP3tB5raMWeXqBvbHnL5
+V5GBk/BcLr6dadVi2mH2ckFzA7dZSEnxPoAlvz1t7lxO9dU+zb75OIXH3K8KVKmF
+T7OYXNFEE352xsEClOvT9BWnt7/lt20DkVnv7pZ8tkei+R9DvNqYfnH8Ekk1Ecr1
+2Zu8zeWz4LyLgj8wYDwrX9SV8+1sMKuMCh/9vW/0gqWeZ4zEpu/I45igwrOj2mm+
+bV6+IuyNWtjlseWl8WoatlzrXCA1NcNd7qKLiyQoQL6qomvRgptrPw==

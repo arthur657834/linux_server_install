@@ -1,14 +1,9 @@
-yum -y install mysql mysql-server 
-/etc/init.d/mysqld start
-mysql_secure_installation
-
-mysql -uroot -p123456
-GRANT ALL PRIVILEGES ON *.* TO root@"%" IDENTIFIED BY "123456";
-CREATE DATABASE `jeecms` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-flush privileges;
-
-/root/apache-tomcat-6.0.44/webapps/ROOT/WEB-INF/config
-vi jdbc.properties
-
-http://10.1.51.124:8080/jeeadmin/jeecms/index.do
-
+U2FsdGVkX1+0MD60LfPQfltHxhqoCKtApIMxiBh5Id8+hN2VrvS+tYBxsx4JtBhF
+Mk2TGrdUalojIxI48ROX8VGZEDTq+OW8E8fNJmZC7xlJWIHkzUlBxK5KdbCAA6K+
+4uegSMPs5xNQ4IVuQLHzdejDx/vaMMMQV/kFsgeby512UEZPi+v4ZP0Qg9Cdj2EL
+UYH9wz73i46TM5QKvLhUmgIEDCc+DgLUrTT101a7fSQ4OpDaIuqfRCZyYATSrclc
+/AhPShImDK2Gt4BY9H7fHPZVYf/Uuh+2MzCBVdYgDW/oqiIQr6zTw3FvCytHuog7
+0E3B5Nn+jl7Jn9SGbWtjUXDH97St5YW72/rWLU4Xwi2XZf3p60XFKI2LJ55N2EdG
+GTfJOUhpSVGvbd4R5/OPsMapSoqMe/TwdWHG/d5qVUNJZlaaodPLbz4WH04Q8oBQ
+D3gfaaoU4DgyaiDonuETlyaRS+tJoPXI25NGm2mEEgrtJ22oHSx0lrsRK6zCFqqO
+uRKxgr4XNBl3ikoZvzGHhTO7vqwvr1ib1ttus1CuBSiwIMPJPCvliPCgiSximEnF
