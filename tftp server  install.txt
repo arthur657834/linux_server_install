@@ -1,6 +1,17 @@
-U2FsdGVkX18muVwst/ZGWY9dTUOH9Gob1J6/fg1Vf0DVjJkLf9ldEOIqX4b4MUkA
-GFcR/1c9AIYX7fyVHhM7YsYiiIvALxQrjf6Uz+6riJuBNNTrWDw328DSopS7rsCy
-W+X2wiuqT22cRNyxGB6GATxdI94gqb5UplajMRYD+r7FemtsbVbLbgNe38MDLh2u
-ehCo/sUlyNuhfP/Ordy+UEbn5JsQUin5estmSMD2vXSbpa8mn9oE+sjEnpAciQGQ
-W9LV5+p9nTDRj9f8Cm/nXxb9bqjS26mfazOI/cHDm5jU/3xHKkRopdpkpDbdltNl
-petS7+KYzZOV2XsPDyhrcpxseykF6Cs+fUzqYIk+4dxr08nchuYCD6WSGXd1pEQl
+yum -y install tftp tftp-server xinetd
+vi /etc/xinetd.d/tftp 配置文件
+disable= no => disable= yes
+server_args= -c -s /var/lib/tftpboot -c选项，允许上传文件
+
+chmod o+w tftpboot/
+service xinetd restart
+
+tftp IP
+	get file
+	put file
+	q
+
+
+
+
+

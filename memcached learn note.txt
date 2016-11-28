@@ -1,19 +1,33 @@
-U2FsdGVkX1/1JvsVdAREPjSDUlMl7mYLfSJqRAa2MUcyQFeIjR3/ignhhATN1KdV
-UCijB5OkSshfGQTiFU1eQHjqM7Ly0EGSJpyMU4279BLxPahUw0ncw/YEpKumyVK+
-yliEVuy2Y1ALrt+YFpRgimgFql3/GE/NLjfY0tzKIXLSceH0xBaBXZCAhMvaYwfF
-ai9yLXsunEZdmD9+yB/o7Xvz0EhE2BTm8TEfg0YxI1n/WGqrUfESiHtdnPqT2CFg
-DkSjxAtCTHiRNsL2yXQt3J16LffURgp0fSu77H7xGbieG+AMQtl5x5REuBxd9Jhf
-ZZxgmlv10gqgVzEixSarHIdvCp4Tjd+/m+DJdI6+/B4KuXwxKL43rdzfN7Fy64GR
-maniYkUzRmFdXUHGkcm5bnrmvOfHVPFo28C3tqVWhz7rW7IRzsJKWK9DJTMIi879
-PkznRkcNvaSWqxDFEKO4OywgKldDrDb4H/lewe2ogR/e5q8VV1XAzxeO0O1Ozh4t
-6Q0Dyzy+7x2KWm4IAWVlTnOFolLLEzfOHnU1+HpTh8Jq0ajHVhPYSmz1ENM0b4zd
-OD/v5G67k7xo5Wduu5Tueuou2dQUfGBDeVYGL+l1Qj3J0x4iYcG6h4TBuz0wFbXi
-9Y9VAb33YPycbcC4nrkQcIR+vxFVW0+XWpciPk/kg5v8E9BEcQCECpeuN1SPED8D
-oBgo14nnwijtYhYPZQRdDdMEB8wHtUlcVdYfZOfk5PBfbIrpWIPaogNnQ+NFIyPf
-PBkIizbgobCOEQFqRx3Iw+2WWZdnn+mF/O6UfbiZznkfljjQUuZwswQi1CbUc38g
-Q4HeXx8YSqSsfPZZj+Fu1dB3XugHCUQJ9wl6r82VT6sgpF0B5F8+PvOP1bCDXd+p
-R695MFh/thoe/fnfXC3UcTG2Q9b91bA3OmdTeQpbkBJ3AGsKf8YF5mZc4VcjJGwO
-jNNp4G8OjCbJZ6//TmmposTaCTZ8nTvAfevIG4HM+32+zSLJuu8kqTRcWRAR/uFX
-o4Lth6QFavep0H3arPCXxCQK7xNzmumIHhfDObU8gbdJ3ebHEkJo4e07wo3BlBRb
-EjtNdXi8KXAZobdzYrWhzXMny2h/xHXxmaRsrY3DYmEvjpF6xdSTAXOTXhH31hFE
-rhhfMN7kVzEgOOS4bQKBOr7TcPEWi3b3
+yum -y install libevent-devel
+wget http://memcached.org/files/memcached-1.4.25.tar.gz
+tar zxvf memcached-1.4.25.tar.gz 
+cd memcached-1.4.25
+./configure;make;make install
+
+memcached -d -m 10 -u root -l localhost -p 11211 -c 256 -P /tmp/memcached.pid
+telnet localhost 11211
+	stats
+	stats items
+	stats cachedump slab_id limit_num
+	stats slabs
+	stats sizes
+	stats reset
+	flush_all 
+	
+command <key> <flags> <expiration time> <bytes>
+<value>
+
+参数	用法
+key	key 用于查找缓存值
+flags	可以包括键值对的整型参数，客户机使用它存储关于键值对的额外信息
+expiration time	在缓存中保存键值对的时间长度（以秒为单位，0 表示永远）
+bytes	在缓存中存储的字节点
+value	存储的值（始终位于第二行）
+
+set：set userId 0 0 5
+add
+replace
+get：get userId  gets userId
+delete：delete userId
+append
+prepend

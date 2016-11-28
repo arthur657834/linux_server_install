@@ -1,9 +1,14 @@
-U2FsdGVkX1/WSMS0vb3MKBWbYMVn3k9C9vMNkT4+P+0KKg11/QV5R/zNFx7UjhDA
-tgZXxIpjg892j7VphNejkk3Np040sQ0pk+v7osVtOr5f6BnQvBIyn1i+pS85VrjW
-HWfq4aLRSdwK4AbKi24tCN/zj2x6FHNhKx/YrfPboMkVORnZAJOe9XdQVmWGojB9
-P+8tbSZ7H7MkVxGBFi1uvmF0cRZOfULBa/jbmAPYY2obXTjxdHrQ2TOntYnanFTf
-aGG6U2ufiB/sWFU3I5Xf6Delif4c9EbbI52OpUJTyK1HM9LcihIEfiPRMRbu5YC3
-d72W0NonEcy9spjVdvz1WGWKcUJu+8q/ptKSBqNuos2bgBVXT14yF9qNyMllUlFr
-xLzHwMX2qo+hojDApLPLNWP77lEU0wHPOv+g4eWsExdL/OhPYoHz9MFGl3I5MHb0
-4AqVAVMxeM/GTMG4JFymZQT2lFfNBYfDRX6v+WRx1g+N/y7A8BqMPAf02Tfm7ROQ
-mDoOx7g+Vq4c2g4VSt4hhLpuodfkFdF3
+yum -y install ppp pptpd
+
+vi /etc/ppp/options.pptpd
+
+添加
+ms-dns 8.8.8.8  #添加主DNS服务器地址
+ms-dns 8.8.4.4  #添加备DNS服务器地址
+
+具体配置再看，refuse-开头的配置可能要修改
+vi /etc/ppp/chap-secrets  
+
+添加帐号密码
+# client        server  secret                  IP addresses
+osyunweivpnuser01       pptpd   123456                  *

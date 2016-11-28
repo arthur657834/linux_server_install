@@ -1,15 +1,39 @@
-U2FsdGVkX1+uPcAkPA+56f1zY+AJ3tLpjVoDM/hXBxo6SIPgAsVF9Rzfi6pZkhZd
-uIiv5biDJeluHCxcZBDxch7/wC0YjiWJKxQZWnUuFbstZUyDfMVbvd8oo7AN5WWY
-5j9KisNs9OB26EULGnrN0Z4GQD6SEIU42CpvUSczFHIPKkqtfnFG9GxxpTgaanxl
-0h3EZtmUnIJrdsZsvvYtU7Dp1Iz0V2Fqr72cmJDo7ascc4K65HjX9JWroSqmz0aX
-dOFhE6YEWMbf5Kr9PMIhOSkj0CjkKRBozguRbglSAe3X0Vt5P4piAalyBEg8YrMl
-0AOMXYatw4tTjGveVRs1CZlQ/HXafw3vxCWpR9R8ZIDAhORN9q+kUvgkCdrewKCP
-d46RxZXYBHMrwKrrrI5/esFn4mIDFZ6rR5I0tTle63Kpm2JW7KmuCVe1nHZvjfsS
-PVNbcBsF3M//9FXEkK09kh0C/qFLdnX/LysTHB0TZ3z+7yK9GDNeCuhHoNX9/Kbg
-NZjitNNl/HvLKQ+YMJYgd5WWjtFvybDUxmfFOo5XlkSKsYQjvPyjl7uM9+LnHuNL
-SKqDjM7GNOZiTrGMRNb2hKzhMTCKwoNh4Q9OkNZxGskj9stMdp+19KzI1fUTV/b9
-ii3woGdXBUHKChJKzT7SIHpgx50o/V7SZt0c1a6TM0BQS6XpuByH/3tm9QktvH4x
-Zp2EQ/gyympSvYeQZU5sw0O/bf9WptXOePSOrcXc7YoAgpu2ZOxw0TWBUmdzr/1D
-TBqampeFz2OuGlSXtLFTtHH3tHVfqMpROiAHg17U0xdqJ9Zne7aIGGKv4rRZ3icM
-l/0hqfuImRjjxa6xCcpzyFhubq0Al6JI1f32kKaQGUvMAZo1Q8gzhVv2wlJqRemN
-NNWYw3iBbbEwb721Iqk7k6Zwrf6wjiYPO7i8EJmU1RXLNyZkwxKGow==
+yum -y install openswan xl2tpd ppp lsof
+
+mkdir /var/run/xl2tpd/
+echo 0 > /proc/sys/net/ipv4/conf/default/accept_redirects
+echo 0 > /proc/sys/net/ipv4/conf/default/send_redirects
+
+vim /etc/xl2tpd/xl2tpd.conf 
+
+[global]
+ipsec saref = yes
+
+[lns default]
+ip range = 10.82.88.2-10.82.88.254
+local ip = 10.82.88.1
+refuse chap = yes
+refuse pap = yes
+require authentication = yes
+ppp debug = yes
+pppoptfile = /etc/ppp/options.xl2tpd
+length bit = yes 
+
+vim /etc/ppp/options.xl2tpd
+
+require-mschap-v2
+ms-dns 8.8.8.8
+ms-dns 8.8.4.4
+asyncmap 0
+auth
+crtscts
+lock
+hide-password
+modem
+debug
+name l2tpd
+proxyarp
+lcp-echo-interval 30
+lcp-echo-failure 4 
+
+xl2tpd -D 启动

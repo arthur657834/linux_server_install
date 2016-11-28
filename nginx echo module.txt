@@ -1,28 +1,54 @@
-U2FsdGVkX1/yPT+o56J0tBPizSImHNyGqLXVmc3w1PoksUQ6HRl7TUdqRdh81ZuV
-W9jaX3+G5JI9sZYw65KVaXyo6OfnrsFXkRMYLRn6VTClgao6k+J+xJeBSs8LFCDK
-LMNElbLzWKUE5U/um+Il3EL5Vu/T6S3jtMwQdWZtYXYQyzKCPFM0G2/mONMDXfEu
-+TMJUt6vsW8AaHiruhmm5+Iprr//o6AcpaNQeEXQpIoONxGHzF2ZPa5WSMVrzA1A
-BeBIvraMN57cfh1iTFoxJMQo1XArKFLwDDqaZzHfeOWOezkGlzmIOD8QsI6ElBrX
-fgpoL+U78yrKL9u0ZnGwTQ15HajH/4oAebNsKEVhB2L97JpboX4JFWMctDfp1zKb
-Y3c6JUMrJU7iE4EINeqv+dFCXBCi/oWyifxcWRDbM0Vd4l/Zr3mC6ZVaf+2SKUkq
-ms3l2DYmFZJFr3wKHdZlLZ0wP1dUWb21XvSniPdEtyvLNQoCzd7R492LXd6LJ62c
-9vQxEZB531mGFdz2U48XNWCnkbhrzwiZ1JcO7Lxu05emyhtw/FDmzJiKrgKDKhKG
-GStxywNGGsC1olV2mdu/CZOt70H3IcjPoRJgKMksGZTnk0cDJhYX8UaC1fQvRUJE
-WNsfVG21quwtvESlXnyHWlmYqP00x91+PiIIYP93HZGz9mjUwzbkf+BpaPSq1/gp
-fwcfFSpZvOYzSU+K4BB969ngNRF9j9+fAKqYEocqwmmlHhZGnDnMq6I1dliJCq1q
-AMRemTW2Se+KSFx7k/CBWZHMo040VABLqQcWQ7Qaxg38jWJbwOux5tVmS5ej6cr+
-ztuZi94WuJs7Ygp1h2vbRAWieGbLBALZKaa/3wcXHc0VgssvHAft+zcB29QIAeIJ
-j8IbZ+bgJUDMNbVv28yhB5WF3fdFYEf2mmcuGBdt0g2K3XysPsvduCplJvfF3ke6
-bhY0UcrSKo9EUsciv+C+WZzzazclUAOu9B+cXWOmc+GMy+UyMOszMwKViGpnL4l3
-FLWwg8O7QQEd1sEQ4r7du8JL+GT1GrmJtbkHW3UhaT60XJfv+s8MJLg01rLs+yhl
-CXyj+/pEf4vRjBHRizyxqtgtkbITIM7h7fZUCYUpeRyLJi3Uyy0FPhVH8YVE5lXJ
-FNzZPeFW9YASCyjERLqZ1G4mLghcRb3KhacjMa4dBP7spoJlyWgj8XJjANOS1U6O
-tinnPPAdMMFFnMKoV0utQm0ywHzyOARFdJOJLQp8YBOi/5kXEIbAeh+6UfnkMMgX
-AFkNyimv8/NAhXZm12i0ILk5rCZHcMA2Wn7ghif6NgsLb7YzrzkbH2lYfYTBzmqw
-j5kFGSgyLVrMibHobquUrPlREKRMV9GBFIdA2tiXiBE2w+Em/albm3P1f5H8sZiR
-D1bbiN3rGvmuFNgWhXPPTIMDA6EQBQN3WwlwiY+pQDxKuX3UrskGwPgD0xgdH3zS
-pNTKdtkee6nbd1/XppfRzBeSU3mbkqVihq2auug1qxNZlMslXiS72iNl6ez3tZiB
-cGH/BcdG2Tg0wbvifB/+Gbaya8tgsXDFot0pMOHP5mEXql2rHUSf99F7pPI2TlL1
-BMrsntr4UGd1czN2d7vtMz+Ugj5H5qzkIeF9HdRaJFW/BTHsKcK8G8Y2GctfNS3U
-hNpRi+YK7BWgnvn0DdfqQrOclAvKIMBNRCA+9WcYc7YLMl1wIDqirIfi3nc+blfo
-MIB2dl49htpptUjsG8F1iTAd95+1kpt+NtUIiWNHUXO5YJtgd1aUKx1go74pyfxH
+https://www.nginx.com/resources/wiki/modules/echo/
+
+wget http://nginx.org/download/nginx-1.9.12.tar.gz
+tar zxvf nginx-1.9.12.tar.gz 
+git clone https://github.com/openresty/echo-nginx-module.git
+
+yum -y install pcre-devel
+cd nginx-1.9.12
+./configure --add-module=/root/echo-nginx-module --with-openssl=/usr/lib64/openssl
+make
+make install
+
+vi /usr/local/nginx/conf/nginx.conf
+location / 中添加
+
+if ($host != '192.168.1.250' ) {
+echo_before_body hello;
+echo "not equal 250";
+echo $host;
+echo_sleep 2;
+echo_after_body igor;
+#       return 403;
+}
+
+
+echo_foreach_split '&' $query_string;    # 将查询字符串以&分割 
+
+# subrequests in parallel 
+echo_location_async /sub1;
+echo_location_async /sub2;        # 发送子请求到$echo_it对应的location
+
+# subrequests in series (chained by CPS)
+echo_location /sub1;
+echo_location /sub2;
+
+echo -n "hello, ";
+echo_reset_timer;
+echo "$echo_timer_elapsed";
+echo_flush; # ensure the client can see previous output immediately
+echo_duplicate 3 " END ";
+echo_after_body igor;
+
+echo_read_request_body;
+echo_request_body;
+
+echo_subrequest_async POST '/sub' -q 'foo=Foo' -b 'hi';
+echo_subrequest_async PUT '/sub' -q 'bar=Bar' -b 'hello';
+	  
+
+ps aux | grep nginx | awk '{print $2}' | xargs kill -9;/usr/local/nginx/sbin/nginx
+
+
+
+
