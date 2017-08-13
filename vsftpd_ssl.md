@@ -12,6 +12,7 @@ openssl req -new -x509 -nodes -out vsftpd.pem -keyout vsftpd.pem -days 3650
 生成证书
 
 vsftpd.conf添加配置:
+```
 # For test, I use vsftp default certificate file
 rsa_cert_file=/etc/vsftpd/.sslkey/vsftpd.pem
 # Turn on SSL
@@ -26,10 +27,10 @@ require_ssl_reuse=NO
 # Select which SSL ciphers vsftpd will allow for encrypted SSL connections
 # (required by FileZilla)
 ssl_ciphers=HIGH
-
+```
 
 默认不启用隐式ssl功能，相应的服务器端隐式ssl默认端口是21（很多客户端隐式ssl连接时，设置的默认端口为990，因此如果服务器的不自定义成和客户端一致的话，会导致连接失败！）。如果启用了隐式ssl，那么ftp客户端也必须以隐式ssl的方式连接到21/990端口，ftp客户端的不加密连接、显式ssl连接都会超时。所以不建议开启该设置！
 
 
 winscp连接:
-下载证书,指定加密协议,高级中指定证书
+下载证书,指定加密协议,高级中指定证书,指定ssl版本
