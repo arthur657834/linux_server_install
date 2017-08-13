@@ -27,6 +27,15 @@ require_ssl_reuse=NO
 # Select which SSL ciphers vsftpd will allow for encrypted SSL connections
 # (required by FileZilla)
 ssl_ciphers=HIGH
+
+
+rsa_private_key_file=/etc/ssl/certs/vsftpd.pem
+pasv_max_port=65535
+pasv_min_port=64000
+force_anon_logins_ssl=YES
+force_anon_data_ssl=YES
+allow_anon_ssl=NO
+
 ```
 
 默认不启用隐式ssl功能，相应的服务器端隐式ssl默认端口是21（很多客户端隐式ssl连接时，设置的默认端口为990，因此如果服务器的不自定义成和客户端一致的话，会导致连接失败！）。如果启用了隐式ssl，那么ftp客户端也必须以隐式ssl的方式连接到21/990端口，ftp客户端的不加密连接、显式ssl连接都会超时。所以不建议开启该设置！
