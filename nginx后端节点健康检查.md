@@ -14,6 +14,9 @@ check interval=3000 rise=2 fall=3 timeout=3000
 4.nginx打补丁使用淘宝的nginx_upstream_check_module
 补丁地址：https://github.com/yaoweibin/nginx_upstream_check_module
  
+补丁列表备选:
+https://github.com/yaoweibin/nginx_upstream_check_module
+ 
 给nginx源码打补丁
 # cd nginx-1.10.1 #进入nginx的源码目录
 # patch -p0 < /root/nginx_upstream_check_module/nginx_upstream_check_module-master/check_1.9.2+.patch
