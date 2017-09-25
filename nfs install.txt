@@ -31,3 +31,7 @@ rpc.mountd
 showmount -e 192.168.0.29
 
 mount -t nfs 192.168.0.29:/data /mnt/ -o nolock
+
+开机自动挂载：
+vi /etc/fstab 
+10.1.240.78:/opt/uyun/log    /opt/uyun/log     nfs   defaults   0 0
