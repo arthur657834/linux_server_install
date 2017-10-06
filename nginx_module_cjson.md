@@ -1,4 +1,4 @@
-
+```
 https://github.com/mpx/lua-cjson/releases
 https://www.kyne.com.au/~mark/software/lua-cjson-manual.html
 
@@ -29,6 +29,7 @@ include lua.conf
 lua.conf:
 lua_package_path  '/usr/local/lib/lua/resty/?.lua;;';
 lua_package_cpath  '/usr/local/lib/lua/?.so;;';
+```
 
 lua test.lua
 ```lua
