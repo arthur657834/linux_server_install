@@ -31,6 +31,21 @@ location ~* ^/2328(/.*) {
       content_by_lua 'ngx.say("hello, ttlsa lua")';
 }
 
+location /lua-version {
+            content_by_lua '
+                if jit then
+                    ngx.say(jit.version)
+                else
+                    ngx.say(_VERSION)
+                end
+            ';
+}
+         
+location /user-aciton { // 导入 lua脚本 的方式
+               default_type 'text/plain';
+               content_by_lua_file /Users/admin/Developer/workspace/lua/post_user_action.lua;
+}
+          
 sbin/nginx
 
 curl http://10.1.50.201/2328/ 
