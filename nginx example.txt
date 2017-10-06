@@ -1,4 +1,4 @@
-nginx 开启目录服务
+nginx 开启目录服务:
 
 location /ljtest {
     autoindex on;
@@ -20,3 +20,21 @@ autoindex_localtime on;
 配置Nginx目录列表的方法详细参照:http://wiki.nginx.org/NginxChsHttpAutoindexModule
 
 如果想希望目录列表支持header,footer则可以安装三方插件: http://wiki.nginx.org/NginxNgxFancyIndex
+
+nginx 返回固定信息：
+location ~ ^/get_text {
+    default_type text/html;
+    return 200 'This is text!';  
+}
+
+location ~ ^/get_json {
+    default_type application/json;
+    return 200 '{"status":"success","result":"nginx json"}';
+}
+
+location ~ ^/get_text/article/(.*)_(\d+).html$ {
+    default_type text/html;
+    set $s $1;
+    set $d $2;
+    return 200 str:$s$d;
+}
