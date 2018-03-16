@@ -49,4 +49,10 @@ rabbitmqctl start_app
 list_exchanges name type durable auto_delete
 list_bindings
 
+rabbitmq-plugins list
+rabbitmq-plugins enable rabbitmq_management
+
+http://127.0.0.1:15672/
+输入默认账号: guest   密码: guest
+
 ```
