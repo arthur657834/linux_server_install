@@ -55,4 +55,10 @@ rabbitmq-plugins enable rabbitmq_management
 http://127.0.0.1:15672/
 输入默认账号: guest   密码: guest
 
+添加用户
+rabbitmqctl add_user mytest mytest
+rabbitmqctl set_user_tags mytest administrator
+rabbitmqctl set_permissions -p / mytest '.*' '.*' '.*'
+rabbitmqctl list_permissions
+
 ```
