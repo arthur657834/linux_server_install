@@ -3,7 +3,29 @@
 消息（Message）是指在应用间传送的数据。消息可以非常简单，比如只包含文本字符串，也可以更复杂，可能包含嵌入对象。
 
 消息队列（Message Queue）是一种应用间的通信方式，消息发送后可以立即返回，由消息系统来确保消息的可靠传递。消息发布者只管把消息发布到 MQ 中而不用管谁来取，消息使用者只管从 MQ 中取消息而不管是谁发布的。这样发布者和使用者都不用知道对方的存在。
+```
+RabbitMQ 中交换器主要分为四种类型：direct、fanout、topic 以及 headers，headers 用的比较少，就不讲了。
+* direct
+>根据路由键全文匹配去寻找绑定到此交换器上的匹配成功的队列，然后投递消息。
 
+* fanout
+>把消息投递给所有绑定到此交换器上的队列，而且会忽略路由键。
+
+* topic
+根据路由键通配符匹配去寻找绑定到此交换器上的匹配成功的队列，然后投递消息
+
+```java
+@Profile("direct")
+``
+在 RabbitMQ 中，有两种 acknowledgement 模式
+* 自动 acknowledgement 模式
+> 发后即忘模式
+
+* 手动 acknowledgement 模式
+
+ReturnCallback 比 ConfirmCallback 先回调
+
+```
 RabbitMQ 是一个由 Erlang 语言开发的 AMQP 的开源实现。
 
 AMQP ：Advanced Message Queue，高级消息队列协议。它是应用层协议的一个开放标准，为面向消息的中间件设计，基于此协议的客户端与消息中间件可传递消息，并不受产品、开发语言等条件的限制。
