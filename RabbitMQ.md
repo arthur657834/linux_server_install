@@ -16,7 +16,7 @@ RabbitMQ 中交换器主要分为四种类型：direct、fanout、topic 以及 h
 
 ```java
 @Profile("direct")
-``
+```
 在 RabbitMQ 中，有两种 acknowledgement 模式
 * 自动 acknowledgement 模式
 > 发后即忘模式
